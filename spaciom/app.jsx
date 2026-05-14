@@ -2,6 +2,164 @@
 // Spaciom — main page
 // ─────────────────────────────────────────────────────────────
 
+// ─── Custom Cursor ──────────────────────────────────────────
+function CustomCursor() {
+  const glowRef = React.useRef(null);
+  const dotRef = React.useRef(null);
+  const trailRefs = React.useRef([]);
+  const mouse = React.useRef({ x: -100, y: -100 });
+  const glowPos = React.useRef({ x: -100, y: -100 });
+  const trailPositions = React.useRef(Array(6).fill({ x: -100, y: -100 }));
+
+  React.useEffect(() => {
+    const isMobile = window.matchMedia('(max-width: 900px)').matches;
+    if (isMobile) return;
+
+    const onMove = (e) => {
+      mouse.current = { x: e.clientX, y: e.clientY };
+      if (dotRef.current) {
+        dotRef.current.style.left = e.clientX + 'px';
+        dotRef.current.style.top = e.clientY + 'px';
+      }
+    };
+
+    const onOver = (e) => {
+      const t = e.target.closest('a, button, [data-tilt]');
+      if (t && glowRef.current) glowRef.current.classList.add('hovering');
+    };
+    const onOut = (e) => {
+      const t = e.target.closest('a, button, [data-tilt]');
+      if (t && glowRef.current) glowRef.current.classList.remove('hovering');
+    };
+
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseover', onOver);
+    document.addEventListener('mouseout', onOut);
+
+    let frame;
+    const animate = () => {
+      const gp = glowPos.current;
+      gp.x += (mouse.current.x - gp.x) * 0.12;
+      gp.y += (mouse.current.y - gp.y) * 0.12;
+      if (glowRef.current) {
+        glowRef.current.style.left = gp.x + 'px';
+        glowRef.current.style.top = gp.y + 'px';
+      }
+      const tp = trailPositions.current;
+      for (let i = 0; i < tp.length; i++) {
+        const prev = i === 0 ? mouse.current : tp[i - 1];
+        tp[i] = {
+          x: tp[i].x + (prev.x - tp[i].x) * (0.08 - i * 0.008),
+          y: tp[i].y + (prev.y - tp[i].y) * (0.08 - i * 0.008),
+        };
+        const el = trailRefs.current[i];
+        if (el) {
+          el.style.left = tp[i].x + 'px';
+          el.style.top = tp[i].y + 'px';
+          el.style.opacity = (0.35 - i * 0.05);
+          el.style.width = el.style.height = (14 - i * 1.5) + 'px';
+        }
+      }
+      frame = requestAnimationFrame(animate);
+    };
+    frame = requestAnimationFrame(animate);
+
+    return () => {
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseover', onOver);
+      document.removeEventListener('mouseout', onOut);
+      cancelAnimationFrame(frame);
+    };
+  }, []);
+
+  return (
+    <>
+      <div className="cursor-glow" ref={glowRef} />
+      <div className="cursor-dot" ref={dotRef} />
+      {Array(6).fill(0).map((_, i) => (
+        <div key={i} className="cursor-trail" ref={el => trailRefs.current[i] = el} />
+      ))}
+    </>
+  );
+}
+
+// ─── Scroll Reveal Hook ─────────────────────────────────────
+function useScrollReveal() {
+  React.useEffect(() => {
+    const els = document.querySelectorAll('.reveal, .reveal-scale');
+    if (!els.length) return;
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    els.forEach(el => obs.observe(el));
+    return () => obs.disconnect();
+  }, []);
+}
+
+// ─── 3D Tilt Hook ───────────────────────────────────────────
+function useTiltCards() {
+  React.useEffect(() => {
+    const isMobile = window.matchMedia('(max-width: 900px)').matches;
+    if (isMobile) return;
+
+    const cards = document.querySelectorAll('[data-tilt]');
+    const onMove = (e) => {
+      const card = e.currentTarget;
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const cx = rect.width / 2;
+      const cy = rect.height / 2;
+      const rotX = ((y - cy) / cy) * -8;
+      const rotY = ((x - cx) / cx) * 8;
+      card.style.transform = 'perspective(800px) rotateX(' + rotX + 'deg) rotateY(' + rotY + 'deg) scale(1.02)';
+      const shine = card.querySelector('.tilt-shine');
+      if (shine) {
+        shine.style.setProperty('--shine-x', (x / rect.width * 100) + '%');
+        shine.style.setProperty('--shine-y', (y / rect.height * 100) + '%');
+      }
+    };
+    const onLeave = (e) => {
+      e.currentTarget.style.transform = 'perspective(800px) rotateX(0) rotateY(0) scale(1)';
+    };
+    cards.forEach(c => {
+      c.addEventListener('mousemove', onMove);
+      c.addEventListener('mouseleave', onLeave);
+    });
+    return () => cards.forEach(c => {
+      c.removeEventListener('mousemove', onMove);
+      c.removeEventListener('mouseleave', onLeave);
+    });
+  }, []);
+}
+
+// ─── Parallax Background ────────────────────────────────────
+function ParallaxBackground() {
+  const layerRef = React.useRef(null);
+  React.useEffect(() => {
+    const onScroll = () => {
+      if (!layerRef.current) return;
+      const y = window.scrollY;
+      const orbs = layerRef.current.querySelectorAll('.parallax-orb');
+      if (orbs[0]) orbs[0].style.transform = 'translateY(' + (y * 0.08) + 'px)';
+      if (orbs[1]) orbs[1].style.transform = 'translateY(' + (y * -0.05) + 'px) translateX(' + (y * 0.02) + 'px)';
+      if (orbs[2]) orbs[2].style.transform = 'translateY(' + (y * 0.04) + 'px)';
+      const grid = layerRef.current.querySelector('.parallax-grid');
+      if (grid) grid.style.transform = 'translateY(' + (y * -0.03) + 'px)';
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+  return (
+    <div className="parallax-layer" ref={layerRef}>
+      <div className="parallax-orb parallax-orb-1" />
+      <div className="parallax-orb parallax-orb-2" />
+      <div className="parallax-orb parallax-orb-3" />
+      <div className="parallax-grid" />
+    </div>
+  );
+}
+
 function ArrowRight({ size = 14 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 14 14" fill="none" style={{ display: 'inline-block', verticalAlign: 'middle' }}>
@@ -67,36 +225,42 @@ function Header() {
   );
 }
 
+// ─── Reveal wrapper ─────────────────────────────────────────
+function Reveal({ children, className = '', delay = 0, scale = false }) {
+  const cls = (scale ? 'reveal-scale' : 'reveal') + (delay ? ' reveal-delay-' + delay : '') + (className ? ' ' + className : '');
+  return <div className={cls}>{children}</div>;
+}
+
 // ─── Hero ────────────────────────────────────────────────────
 function Hero() {
   return (
     <section className="hero container" id="top" data-screen-label="01 Hero">
-      <div className="hero-eyebrow"><span className="pulse"></span>SPATIAL FANDOM EXPERIENCE</div>
-      <h1>Expand <span className="italic">your</span> fandom.</h1>
-      <p className="hero-body">
+      <Reveal><div className="hero-eyebrow"><span className="pulse"></span>SPATIAL FANDOM EXPERIENCE</div></Reveal>
+      <Reveal delay={1}><h1>Expand <span className="italic">your</span> fandom.</h1></Reveal>
+      <Reveal delay={2}><p className="hero-body">
         The infrastructure layer for fan engagement. Phone. Desktop. Headset. We're building the place where fandom lives — and pays — year-round.
-      </p>
-      <div className="hero-actions">
+      </p></Reveal>
+      <Reveal delay={3}><div className="hero-actions">
         <a href="#contact" className="btn-gold">Build with us <ArrowRight /></a>
         <a href="#vision" className="btn-ghost">See the product</a>
-      </div>
+      </div></Reveal>
 
       <div className="stats-row">
-        <div className="stat">
+        <Reveal delay={1}><div className="stat" data-tilt><div className="tilt-shine"></div>
           <div className="stat-idx">01 / OWNERSHIP</div>
           <div className="stat-big gold">Yours.</div>
           <div className="stat-label">Every moment, kept forever.</div>
-        </div>
-        <div className="stat">
+        </div></Reveal>
+        <Reveal delay={2}><div className="stat" data-tilt><div className="tilt-shine"></div>
           <div className="stat-idx">02 / SURFACES</div>
           <div className="stat-big">3 <span style={{ fontSize: 28, color: 'var(--ink-mute)', letterSpacing: '-0.02em' }}>Layers</span></div>
           <div className="stat-label">Phone. Desktop. Headset.</div>
-        </div>
-        <div className="stat">
+        </div></Reveal>
+        <Reveal delay={3}><div className="stat" data-tilt><div className="tilt-shine"></div>
           <div className="stat-idx">03 / CADENCE</div>
           <div className="stat-big">365 <span style={{ fontSize: 28, color: 'var(--ink-mute)', letterSpacing: '-0.02em' }}>Days</span></div>
           <div className="stat-label">Of fandom — not seventeen.</div>
-        </div>
+        </div></Reveal>
       </div>
     </section>
   );
@@ -107,14 +271,14 @@ function Vision() {
   return (
     <section className="section-big" id="vision" data-screen-label="02 The Vision">
       <div className="container">
-        <div className="big-grid">
+        <Reveal><div className="big-grid">
           <div className="big-eyebrow">01 <span className="slash">/</span> THE VISION</div>
           <div>
             <h2 className="big-statement">
               Build an <span className="italic">unforgettable</span> experience for your team. Create memories for you, your friends, and your family.
             </h2>
           </div>
-        </div>
+        </div></Reveal>
         <div className="big-foot">
           <div className="big-foot-item">
             <div className="k">A place for everything</div>
@@ -139,7 +303,7 @@ function Product() {
   return (
     <section className="section-big" id="product" data-screen-label="03 The Product">
       <div className="container">
-        <div className="big-grid">
+        <Reveal><div className="big-grid">
           <div className="big-eyebrow">02 <span className="slash">/</span> THE PRODUCT</div>
           <div>
             <h2 className="big-statement">
@@ -149,7 +313,7 @@ function Product() {
               <span style={{ color: 'var(--ink)' }}>Three surfaces, one spatial layer.</span> What fans hold in hand, what they live in during the game, and what teams use to deliver the experience.
             </p>
           </div>
-        </div>
+        </div></Reveal>
       </div>
     </section>
   );
@@ -160,24 +324,24 @@ function Surfaces() {
   return (
     <section className="container" style={{ paddingBottom: 120 }} data-screen-label="04 Surfaces">
       <div className="phones">
-        <div>
+        <Reveal delay={1}><div>
           <IOSDevice width={300} height={650} dark>
             <PhoneHome />
           </IOSDevice>
           <div className="phone-cap"><span className="num">01</span>· Fan App · Home</div>
-        </div>
-        <div>
+        </div></Reveal>
+        <Reveal delay={2}><div>
           <IOSDevice width={300} height={650} dark>
             <PhoneLive />
           </IOSDevice>
           <div className="phone-cap"><span className="num">02</span>· Live Layer · In-Game</div>
-        </div>
-        <div>
+        </div></Reveal>
+        <Reveal delay={3}><div>
           <IOSDevice width={300} height={650} dark>
             <PhoneDrops />
           </IOSDevice>
           <div className="phone-cap"><span className="num">03</span>· Drops · Locker</div>
-        </div>
+        </div></Reveal>
       </div>
     </section>
   );
@@ -187,12 +351,12 @@ function Surfaces() {
 function ConsoleSection() {
   return (
     <section className="container" style={{ paddingBottom: 200 }} data-screen-label="05 Team Console">
-      <div className="console-wrap">
+      <Reveal scale><div className="console-wrap">
         <div>
           <TeamConsole />
           <div className="console-cap">04 · Team Console · Overview & Statistics</div>
         </div>
-      </div>
+      </div></Reveal>
     </section>
   );
 }
@@ -305,13 +469,16 @@ function Moments() {
       </div>
 
       <div className="moments-grid">
-        {items.map(it => (
-          <div className="moment" key={it.t}>
-            <div className="moment-illo"><MomentIllo kind={it.illo} /></div>
-            <div className="m-title">{it.t}.</div>
-            <div className="m-body">{it.b}</div>
-            <div className="m-tag">{it.tag}</div>
-          </div>
+        {items.map((it, i) => (
+          <Reveal delay={Math.min(i % 3 + 1, 4)} key={it.t}>
+            <div className="moment tilt-card" data-tilt style={{ position: 'relative' }}>
+              <div className="tilt-shine"></div>
+              <div className="moment-illo"><MomentIllo kind={it.illo} /></div>
+              <div className="m-title">{it.t}.</div>
+              <div className="m-body">{it.b}</div>
+              <div className="m-tag">{it.tag}</div>
+            </div>
+          </Reveal>
         ))}
       </div>
     </section>
@@ -328,7 +495,7 @@ function TeamsAndBrands() {
   ];
   return (
     <section className="section container" data-screen-label="07 For Teams & Brands">
-      <div className="section-head">
+      <Reveal><div className="section-head">
         <div className="section-num">04</div>
         <div>
           <div className="section-kicker">FOR TEAMS &amp; BRANDS</div>
@@ -337,16 +504,18 @@ function TeamsAndBrands() {
             We don't build a campaign. We build the layer underneath your fan relationship — so every game, season, and signing compounds the connection instead of resetting it.
           </p>
         </div>
-      </div>
+      </div></Reveal>
 
       <div>
-        {items.map(it => (
-          <div className="tb-block" key={it.l}>
-            <div className="tb-letter">{it.l}.</div>
-            <div className="tb-title">{it.t}</div>
-            <div className="tb-body">{it.b}</div>
-            <div className="tb-meta">{it.meta}</div>
-          </div>
+        {items.map((it, i) => (
+          <Reveal delay={Math.min(i + 1, 4)} key={it.l}>
+            <div className="tb-block">
+              <div className="tb-letter">{it.l}.</div>
+              <div className="tb-title">{it.t}</div>
+              <div className="tb-body">{it.b}</div>
+              <div className="tb-meta">{it.meta}</div>
+            </div>
+          </Reveal>
         ))}
       </div>
     </section>
@@ -371,21 +540,24 @@ function WhySpaciom() {
       </div>
 
       <div className="why-grid">
-        <div className="why-card">
+        <Reveal delay={1}><div className="why-card tilt-card" data-tilt style={{ position: 'relative' }}>
+          <div className="tilt-shine"></div>
           <div className="wc-num">01 / WHY NOW</div>
           <div className="wc-title">Headsets <span className="italic">are real.</span></div>
           <div className="wc-body">Apple Vision Pro and Meta Quest cleared the credibility bar. The next decade of fandom is spatial. We're building for phone today and headset tomorrow — same platform.</div>
-        </div>
-        <div className="why-card">
+        </div></Reveal>
+        <Reveal delay={2}><div className="why-card tilt-card" data-tilt style={{ position: 'relative' }}>
+          <div className="tilt-shine"></div>
           <div className="wc-num">02 / WHY US</div>
           <div className="wc-title">Infrastructure plays <span className="italic">compound.</span></div>
           <div className="wc-body">Apps come and go. Layers stay. Sign one team, and the relationship deepens for a decade — not a season. Every drop, every space, every moment compounds.</div>
-        </div>
-        <div className="why-card">
+        </div></Reveal>
+        <Reveal delay={3}><div className="why-card tilt-card" data-tilt style={{ position: 'relative' }}>
+          <div className="tilt-shine"></div>
           <div className="wc-num">03 / WHY SPACIOM</div>
           <div className="wc-title">We're <span className="italic">fans first.</span></div>
           <div className="wc-body">This isn't a tech demo looking for a use case. It's a use case fans have already had for fifty years — they just never had a place to keep it. Now they will.</div>
-        </div>
+        </div></Reveal>
       </div>
     </section>
   );
@@ -417,15 +589,18 @@ function Team() {
       </div>
 
       <div className="team-grid">
-        {people.map(p => (
-          <div className="team-card" key={p.n}>
-            <div className="team-photo"></div>
-            <div>
-              <div className="team-tag">{p.tag}</div>
-              <div className="team-name">{p.n}</div>
-              <div className="team-role">{p.r}</div>
+        {people.map((p, i) => (
+          <Reveal delay={Math.min((i % 4) + 1, 4)} key={p.n}>
+            <div className="team-card tilt-card" data-tilt style={{ position: 'relative' }}>
+              <div className="tilt-shine"></div>
+              <div className="team-photo"></div>
+              <div>
+                <div className="team-tag">{p.tag}</div>
+                <div className="team-name">{p.n}</div>
+                <div className="team-role">{p.r}</div>
+              </div>
             </div>
-          </div>
+          </Reveal>
         ))}
       </div>
     </section>
@@ -436,15 +611,15 @@ function Team() {
 function FinalCTA() {
   return (
     <section className="cta-section container" id="contact" data-screen-label="10 Step Inside">
-      <div className="section-kicker" style={{ marginBottom: 24 }}>STEP INSIDE</div>
-      <h2>Let's build the <span className="italic">experience.</span></h2>
-      <p>
+      <Reveal><div className="section-kicker" style={{ marginBottom: 24 }}>STEP INSIDE</div></Reveal>
+      <Reveal delay={1}><h2>Let's build the <span className="italic">experience.</span></h2></Reveal>
+      <Reveal delay={2}><p>
         For partners, franchises, and the people ready to own the next era of fandom — let's talk about what we're building, and what's possible together.
-      </p>
-      <div style={{ display: 'flex', gap: 12 }}>
+      </p></Reveal>
+      <Reveal delay={3}><div style={{ display: 'flex', gap: 12 }}>
         <a href="mailto:info@spaciom.io" className="btn-gold">Get in touch <ArrowRight /></a>
         <a href="#vision" className="btn-ghost">Read the vision</a>
-      </div>
+      </div></Reveal>
     </section>
   );
 }
@@ -496,8 +671,12 @@ function Footer() {
 // ─── App ─────────────────────────────────────────────────────
 function App() {
   useLenisScroll();
+  useScrollReveal();
+  useTiltCards();
   return (
     <>
+      <CustomCursor />
+      <ParallaxBackground />
       <Header />
       <main>
         <Hero />
