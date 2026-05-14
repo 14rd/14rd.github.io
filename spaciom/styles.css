@@ -1,9 +1,9 @@
 /* Spaciom — Spatial Fandom Experience */
 :root {
-  --bg:        #050d1c;
-  --bg-2:      #03070f;
-  --bg-3:      #0a1830;
-  --card:      #0c1d34;
+  --bg:        #020811;
+  --bg-2:      #010509;
+  --bg-3:      #071324;
+  --card:      #081428;
   --line:      rgba(243, 238, 226, 0.10);
   --line-2:    rgba(243, 238, 226, 0.18);
   --ink:       #f3eee2;
@@ -37,10 +37,7 @@ html, body {
 }
 
 body {
-  background:
-    radial-gradient(1400px 800px at 18% -10%, rgba(232,200,122,0.05), transparent 62%),
-    radial-gradient(1000px 700px at 110% 40%, rgba(40,70,130,0.08), transparent 62%),
-    var(--bg);
+  background: var(--bg);
   min-height: 100vh;
   overflow-x: hidden;
 }
@@ -792,8 +789,11 @@ html, body, * { cursor: none !important; }
 /* 3D tilt cards */
 .tilt-card {
   transform-style: preserve-3d;
-  transition: transform 0.15s ease-out, box-shadow 0.3s ease;
+  transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.5s cubic-bezier(0.23, 1, 0.32, 1);
   will-change: transform;
+}
+.tilt-card.tilt-active {
+  transition: none;
 }
 .tilt-card:hover {
   box-shadow: 0 25px 60px rgba(0,0,0,0.3), 0 0 1px rgba(232,200,122,0.15);
@@ -804,12 +804,12 @@ html, body, * { cursor: none !important; }
   pointer-events: none;
   border-radius: inherit;
   opacity: 0;
-  transition: opacity 0.3s;
+  transition: opacity 0.5s cubic-bezier(0.23, 1, 0.32, 1);
   background: radial-gradient(circle at var(--shine-x, 50%) var(--shine-y, 50%), rgba(232,200,122,0.08), transparent 60%);
 }
 .tilt-card:hover .tilt-shine { opacity: 1; }
 
-/* Parallax background elements */
+/* Living gradient background */
 .parallax-layer {
   position: fixed;
   inset: 0;
@@ -817,38 +817,88 @@ html, body, * { cursor: none !important; }
   z-index: 0;
   overflow: hidden;
 }
-.parallax-orb {
+.living-grad {
   position: absolute;
   border-radius: 50%;
-  filter: blur(80px);
-  opacity: 0.4;
-  will-change: transform;
+  will-change: transform, opacity, filter;
+  transition: opacity 2s ease, filter 2s ease;
 }
-.parallax-orb-1 {
+.living-grad-1 {
+  width: 900px; height: 900px;
+  background: radial-gradient(circle, rgba(232,200,122,0.07), rgba(180,140,60,0.03) 40%, transparent 70%);
+  filter: blur(100px);
+  top: -10%; left: -15%;
+  animation: grad-drift-1 18s ease-in-out infinite alternate;
+}
+.living-grad-2 {
+  width: 700px; height: 700px;
+  background: radial-gradient(circle, rgba(30,60,140,0.08), rgba(20,40,100,0.03) 40%, transparent 70%);
+  filter: blur(120px);
+  top: 25%; right: -20%;
+  animation: grad-drift-2 22s ease-in-out infinite alternate;
+}
+.living-grad-3 {
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(232,200,122,0.05), transparent 65%);
+  filter: blur(90px);
+  top: 55%; left: 20%;
+  animation: grad-drift-3 16s ease-in-out infinite alternate;
+}
+.living-grad-4 {
   width: 500px; height: 500px;
-  background: radial-gradient(circle, rgba(232,200,122,0.12), transparent 70%);
-  top: 10%; left: -5%;
+  background: radial-gradient(circle, rgba(100,60,180,0.06), transparent 65%);
+  filter: blur(110px);
+  top: 75%; right: 10%;
+  animation: grad-drift-4 20s ease-in-out infinite alternate;
 }
-.parallax-orb-2 {
-  width: 400px; height: 400px;
-  background: radial-gradient(circle, rgba(40,80,160,0.1), transparent 70%);
-  top: 40%; right: -8%;
+.living-grad-5 {
+  width: 800px; height: 400px;
+  background: radial-gradient(ellipse, rgba(232,200,122,0.04), transparent 60%);
+  filter: blur(80px);
+  top: 40%; left: -10%;
+  animation: grad-drift-5 25s ease-in-out infinite alternate;
 }
-.parallax-orb-3 {
-  width: 350px; height: 350px;
-  background: radial-gradient(circle, rgba(232,200,122,0.08), transparent 70%);
-  top: 70%; left: 30%;
+@keyframes grad-drift-1 {
+  0%   { transform: translate(0, 0) scale(1); opacity: 0.5; }
+  33%  { transform: translate(60px, 40px) scale(1.08); opacity: 0.7; }
+  66%  { transform: translate(-30px, 80px) scale(0.95); opacity: 0.4; }
+  100% { transform: translate(40px, -20px) scale(1.05); opacity: 0.6; }
+}
+@keyframes grad-drift-2 {
+  0%   { transform: translate(0, 0) scale(1); opacity: 0.4; }
+  50%  { transform: translate(-80px, 60px) scale(1.12); opacity: 0.65; }
+  100% { transform: translate(40px, -40px) scale(0.92); opacity: 0.35; }
+}
+@keyframes grad-drift-3 {
+  0%   { transform: translate(0, 0) scale(1) rotate(0deg); opacity: 0.45; }
+  50%  { transform: translate(70px, -50px) scale(1.1) rotate(10deg); opacity: 0.6; }
+  100% { transform: translate(-40px, 30px) scale(0.9) rotate(-5deg); opacity: 0.35; }
+}
+@keyframes grad-drift-4 {
+  0%   { transform: translate(0, 0) scale(1); opacity: 0.3; }
+  50%  { transform: translate(-60px, -40px) scale(1.15); opacity: 0.55; }
+  100% { transform: translate(30px, 50px) scale(0.95); opacity: 0.25; }
+}
+@keyframes grad-drift-5 {
+  0%   { transform: translate(0, 0) scaleX(1) scaleY(1); opacity: 0.3; }
+  50%  { transform: translate(100px, 30px) scaleX(1.2) scaleY(0.8); opacity: 0.5; }
+  100% { transform: translate(-50px, -20px) scaleX(0.9) scaleY(1.1); opacity: 0.25; }
 }
 .parallax-grid {
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(232,200,122,0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(232,200,122,0.03) 1px, transparent 1px);
+    linear-gradient(rgba(232,200,122,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(232,200,122,0.02) 1px, transparent 1px);
   background-size: 120px 120px;
   will-change: transform;
-  mask-image: radial-gradient(ellipse at 50% 50%, black 30%, transparent 70%);
-  -webkit-mask-image: radial-gradient(ellipse at 50% 50%, black 30%, transparent 70%);
+  mask-image: radial-gradient(ellipse at 50% 50%, black 20%, transparent 60%);
+  -webkit-mask-image: radial-gradient(ellipse at 50% 50%, black 20%, transparent 60%);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* Ensure content above parallax */
@@ -861,6 +911,7 @@ main { position: relative; z-index: 1; }
   .reveal, .reveal-scale { opacity: 1; transform: none; }
   html, body, * { cursor: auto !important; }
   .cursor-glow, .cursor-dot, .cursor-trail, .parallax-layer { display: none; }
+  .living-grad { animation: none !important; }
 }
 
 @media (max-width: 900px) {

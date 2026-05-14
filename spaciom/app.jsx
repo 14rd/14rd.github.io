@@ -102,59 +102,138 @@ function useTiltCards() {
     const isMobile = window.matchMedia('(max-width: 900px)').matches;
     if (isMobile) return;
 
+    const state = new Map();
     const cards = document.querySelectorAll('[data-tilt]');
+
+    cards.forEach(card => {
+      state.set(card, { targetX: 0, targetY: 0, currentX: 0, currentY: 0, active: false, frame: null });
+    });
+
+    const lerp = (a, b, t) => a + (b - a) * t;
+
+    const animateCard = (card) => {
+      const s = state.get(card);
+      if (!s) return;
+      s.currentX = lerp(s.currentX, s.targetX, 0.08);
+      s.currentY = lerp(s.currentY, s.targetY, 0.08);
+      card.style.transform = 'perspective(800px) rotateX(' + s.currentX + 'deg) rotateY(' + s.currentY + 'deg) scale(' + (s.active ? 1.02 : 1) + ')';
+      if (Math.abs(s.currentX - s.targetX) > 0.01 || Math.abs(s.currentY - s.targetY) > 0.01) {
+        s.frame = requestAnimationFrame(() => animateCard(card));
+      } else {
+        s.frame = null;
+      }
+    };
+
+    const startAnim = (card) => {
+      const s = state.get(card);
+      if (s && !s.frame) { s.frame = requestAnimationFrame(() => animateCard(card)); }
+    };
+
+    const onEnter = (e) => {
+      const card = e.currentTarget;
+      const s = state.get(card);
+      if (s) {
+        s.active = true;
+        card.classList.add('tilt-active');
+        setTimeout(() => { card.classList.add('tilt-active'); }, 50);
+      }
+    };
+
     const onMove = (e) => {
       const card = e.currentTarget;
+      const s = state.get(card);
+      if (!s) return;
       const rect = card.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
       const cx = rect.width / 2;
       const cy = rect.height / 2;
-      const rotX = ((y - cy) / cy) * -8;
-      const rotY = ((x - cx) / cx) * 8;
-      card.style.transform = 'perspective(800px) rotateX(' + rotX + 'deg) rotateY(' + rotY + 'deg) scale(1.02)';
+      s.targetX = ((y - cy) / cy) * -6;
+      s.targetY = ((x - cx) / cx) * 6;
       const shine = card.querySelector('.tilt-shine');
       if (shine) {
         shine.style.setProperty('--shine-x', (x / rect.width * 100) + '%');
         shine.style.setProperty('--shine-y', (y / rect.height * 100) + '%');
       }
+      startAnim(card);
     };
+
     const onLeave = (e) => {
-      e.currentTarget.style.transform = 'perspective(800px) rotateX(0) rotateY(0) scale(1)';
+      const card = e.currentTarget;
+      const s = state.get(card);
+      if (s) {
+        s.active = false;
+        s.targetX = 0;
+        s.targetY = 0;
+        card.classList.remove('tilt-active');
+        startAnim(card);
+      }
     };
+
     cards.forEach(c => {
+      c.addEventListener('mouseenter', onEnter);
       c.addEventListener('mousemove', onMove);
       c.addEventListener('mouseleave', onLeave);
     });
     return () => cards.forEach(c => {
+      c.removeEventListener('mouseenter', onEnter);
       c.removeEventListener('mousemove', onMove);
       c.removeEventListener('mouseleave', onLeave);
+      const s = state.get(c);
+      if (s && s.frame) cancelAnimationFrame(s.frame);
     });
   }, []);
 }
 
-// ─── Parallax Background ────────────────────────────────────
+// ─── Living Gradient Background ─────────────────────────────
 function ParallaxBackground() {
   const layerRef = React.useRef(null);
+  const mouse = React.useRef({ x: 0.5, y: 0.5 });
+  const smoothMouse = React.useRef({ x: 0.5, y: 0.5 });
+
   React.useEffect(() => {
-    const onScroll = () => {
-      if (!layerRef.current) return;
-      const y = window.scrollY;
-      const orbs = layerRef.current.querySelectorAll('.parallax-orb');
-      if (orbs[0]) orbs[0].style.transform = 'translateY(' + (y * 0.08) + 'px)';
-      if (orbs[1]) orbs[1].style.transform = 'translateY(' + (y * -0.05) + 'px) translateX(' + (y * 0.02) + 'px)';
-      if (orbs[2]) orbs[2].style.transform = 'translateY(' + (y * 0.04) + 'px)';
-      const grid = layerRef.current.querySelector('.parallax-grid');
-      if (grid) grid.style.transform = 'translateY(' + (y * -0.03) + 'px)';
+    const isMobile = window.matchMedia('(max-width: 900px)').matches;
+
+    const onMove = (e) => {
+      mouse.current = { x: e.clientX / window.innerWidth, y: e.clientY / window.innerHeight };
     };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
+    if (!isMobile) document.addEventListener('mousemove', onMove, { passive: true });
+
+    let frame;
+    const animate = () => {
+      if (!layerRef.current) { frame = requestAnimationFrame(animate); return; }
+      const sm = smoothMouse.current;
+      sm.x += (mouse.current.x - sm.x) * 0.03;
+      sm.y += (mouse.current.y - sm.y) * 0.03;
+      const y = window.scrollY;
+      const grads = layerRef.current.querySelectorAll('.living-grad');
+      const speeds = [0.06, -0.04, 0.03, -0.05, 0.02];
+      const cursorStrength = [30, -20, 25, -15, 20];
+      grads.forEach((g, i) => {
+        const sy = y * (speeds[i] || 0);
+        const cx = (sm.x - 0.5) * (cursorStrength[i] || 0);
+        const cy = (sm.y - 0.5) * (cursorStrength[i] || 0) * 0.6;
+        g.style.transform = 'translate(' + cx + 'px, ' + (sy + cy) + 'px)';
+      });
+      const grid = layerRef.current.querySelector('.parallax-grid');
+      if (grid) grid.style.transform = 'translateY(' + (y * -0.02) + 'px)';
+      frame = requestAnimationFrame(animate);
+    };
+    frame = requestAnimationFrame(animate);
+
+    return () => {
+      if (!isMobile) document.removeEventListener('mousemove', onMove);
+      cancelAnimationFrame(frame);
+    };
   }, []);
+
   return (
     <div className="parallax-layer" ref={layerRef}>
-      <div className="parallax-orb parallax-orb-1" />
-      <div className="parallax-orb parallax-orb-2" />
-      <div className="parallax-orb parallax-orb-3" />
+      <div className="living-grad living-grad-1" />
+      <div className="living-grad living-grad-2" />
+      <div className="living-grad living-grad-3" />
+      <div className="living-grad living-grad-4" />
+      <div className="living-grad living-grad-5" />
       <div className="parallax-grid" />
     </div>
   );
@@ -219,7 +298,7 @@ function Header() {
           <a href="#moments">MOMENTS</a>
           <a href="#team">TEAM</a>
         </nav>
-        <a href="#contact" className="btn-gold">Get in touch <ArrowRight /></a>
+        <a href="contact.html" className="btn-gold">Get in touch <ArrowRight /></a>
       </div>
     </header>
   );
@@ -241,7 +320,7 @@ function Hero() {
         The infrastructure layer for fan engagement. Phone. Desktop. Headset. We're building the place where fandom lives — and pays — year-round.
       </p></Reveal>
       <Reveal delay={3}><div className="hero-actions">
-        <a href="#contact" className="btn-gold">Build with us <ArrowRight /></a>
+        <a href="contact.html" className="btn-gold">Build with us <ArrowRight /></a>
         <a href="#vision" className="btn-ghost">See the product</a>
       </div></Reveal>
 
@@ -325,19 +404,19 @@ function Surfaces() {
     <section className="container" style={{ paddingBottom: 120 }} data-screen-label="04 Surfaces">
       <div className="phones">
         <Reveal delay={1}><div>
-          <IOSDevice width={300} height={650} dark>
+          <IOSDevice width={300} height={650} dark time="7:28 PM" battery={84}>
             <PhoneHome />
           </IOSDevice>
           <div className="phone-cap"><span className="num">01</span>· Fan App · Home</div>
         </div></Reveal>
         <Reveal delay={2}><div>
-          <IOSDevice width={300} height={650} dark>
+          <IOSDevice width={300} height={650} dark time="8:42 PM" battery={61}>
             <PhoneLive />
           </IOSDevice>
           <div className="phone-cap"><span className="num">02</span>· Live Layer · In-Game</div>
         </div></Reveal>
         <Reveal delay={3}><div>
-          <IOSDevice width={300} height={650} dark>
+          <IOSDevice width={300} height={650} dark time="9:15 PM" battery={37}>
             <PhoneDrops />
           </IOSDevice>
           <div className="phone-cap"><span className="num">03</span>· Drops · Locker</div>
@@ -617,7 +696,7 @@ function FinalCTA() {
         For partners, franchises, and the people ready to own the next era of fandom — let's talk about what we're building, and what's possible together.
       </p></Reveal>
       <Reveal delay={3}><div style={{ display: 'flex', gap: 12 }}>
-        <a href="mailto:info@spaciom.io" className="btn-gold">Get in touch <ArrowRight /></a>
+        <a href="contact.html" className="btn-gold">Get in touch <ArrowRight /></a>
         <a href="#vision" className="btn-ghost">Read the vision</a>
       </div></Reveal>
     </section>
@@ -637,7 +716,7 @@ function Footer() {
           <div>
             <h4>Get In Touch</h4>
             <ul>
-              <li><a href="mailto:info@spaciom.io">info@spaciom.io</a></li>
+              <li><a href="contact.html">info@spaciom.io</a></li>
               <li>Winston-Salem, NC</li>
             </ul>
           </div>
