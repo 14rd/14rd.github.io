@@ -10,6 +10,21 @@
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css" />
 <style>
+/* Page transition overlay */
+.page-transition {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: var(--bg);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.45s ease;
+}
+.page-transition.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
 .contact-main {
   max-width: 680px;
   margin: 0 auto;
@@ -85,7 +100,7 @@
   display: inline-flex; align-items: center; gap: 10px;
   background: var(--gold); color: #1a1408;
   font-family: var(--sans); font-weight: 500; font-size: 15px;
-  padding: 14px 28px; border-radius: 999; border: none; cursor: pointer;
+  padding: 14px 28px; border-radius: 999px; border: none; cursor: pointer;
   transition: transform 0.2s, background 0.2s, box-shadow 0.2s;
   box-shadow: 0 1px 0 rgba(255,255,255,0.25) inset, 0 0 0 1px rgba(232,200,122,0.4);
 }
@@ -111,6 +126,7 @@ if (sessionStorage.getItem('vs_proto_spaciom') !== '1') {
 </script>
 </head>
 <body>
+<div class="page-transition" id="pageTransition"></div>
 <div id="root"></div>
 <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin="anonymous"></script>
@@ -126,19 +142,33 @@ function ArrowRight({ size = 14 }) {
   );
 }
 
+// Smooth transition to main site
+function navigateToMain(hash) {
+  const overlay = document.getElementById('pageTransition');
+  overlay.classList.add('active');
+  setTimeout(() => {
+    window.location.href = './' + (hash ? '#' + hash : '');
+  }, 400);
+}
+
 function Header() {
+  const handleNavClick = (e, section) => {
+    e.preventDefault();
+    navigateToMain(section);
+  };
+
   return (
     <header className="header">
       <div className="container header-inner">
-        <a href="./" className="logo">
+        <a href="./" className="logo" onClick={(e) => { e.preventDefault(); navigateToMain(''); }}>
           <span className="mark"></span>
           SPACIOM
         </a>
         <nav className="nav">
-          <a href="./#vision">VISION</a>
-          <a href="./#product">PRODUCT</a>
-          <a href="./#moments">MOMENTS</a>
-          <a href="./#team">TEAM</a>
+          <a href="./#vision" onClick={(e) => handleNavClick(e, 'vision')}>VISION</a>
+          <a href="./#product" onClick={(e) => handleNavClick(e, 'product')}>PRODUCT</a>
+          <a href="./#moments" onClick={(e) => handleNavClick(e, 'moments')}>MOMENTS</a>
+          <a href="./#team" onClick={(e) => handleNavClick(e, 'team')}>TEAM</a>
         </nav>
         <a href="contact.html" className="btn-gold" style={{ opacity: 0.5, pointerEvents: 'none' }}>Get in touch <ArrowRight /></a>
       </div>
@@ -219,6 +249,11 @@ function ContactForm() {
 }
 
 function Footer() {
+  const handleNavClick = (e, section) => {
+    e.preventDefault();
+    navigateToMain(section);
+  };
+
   return (
     <footer className="footer">
       <div className="container">
@@ -245,10 +280,10 @@ function Footer() {
           <div>
             <h4>Sections</h4>
             <ul>
-              <li><a href="./#vision">Vision</a></li>
-              <li><a href="./#product">Product</a></li>
-              <li><a href="./#moments">Moments</a></li>
-              <li><a href="./#team">Team</a></li>
+              <li><a href="./#vision" onClick={(e) => handleNavClick(e, 'vision')}>Vision</a></li>
+              <li><a href="./#product" onClick={(e) => handleNavClick(e, 'product')}>Product</a></li>
+              <li><a href="./#moments" onClick={(e) => handleNavClick(e, 'moments')}>Moments</a></li>
+              <li><a href="./#team" onClick={(e) => handleNavClick(e, 'team')}>Team</a></li>
             </ul>
           </div>
         </div>
@@ -262,6 +297,22 @@ function Footer() {
 }
 
 function App() {
+  // Lenis smooth scroll
+  React.useEffect(() => {
+    if (typeof Lenis === 'undefined') return;
+    const lenis = new Lenis({
+      duration: 1.4,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smoothWheel: true,
+      wheelMultiplier: 1.0,
+      touchMultiplier: 1.4,
+    });
+    function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+    requestAnimationFrame(raf);
+    return () => lenis.destroy();
+  }, []);
+
+  // Scroll reveal
   React.useEffect(() => {
     const els = document.querySelectorAll('.reveal, .reveal-scale');
     if (!els.length) return;

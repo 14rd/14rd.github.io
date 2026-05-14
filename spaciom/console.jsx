@@ -8,6 +8,10 @@ function TeamConsole() {
   const [stats, setStats] = React.useState({
     spaces: 42310, moments: 186000, drops: 7, retention: 61,
     peak: 3200, session: 42, sellThrough: 94,
+    liveViewers: 18420, pastViewers: 312000, goodsSold: 4218,
+    revenue: 842, avgWatch: 38, bounceRate: 12,
+    gifted: 1840, resold: 620, avgPrice: 34,
+    newFans: 2180, returning: 78, nps: 72,
   });
 
   const tabs = ['Dashboard', 'Spaces', 'Drops', 'Moments', 'Audience'];
@@ -22,6 +26,18 @@ function TeamConsole() {
         peak: s.peak + Math.floor((Math.random() - 0.4) * 30),
         session: Math.max(35, Math.min(55, s.session + (Math.random() - 0.5) * 3)),
         sellThrough: Math.max(88, Math.min(99, s.sellThrough + (Math.random() - 0.5) * 2)),
+        liveViewers: s.liveViewers + Math.floor((Math.random() - 0.4) * 80),
+        pastViewers: s.pastViewers + Math.floor(Math.random() * 150),
+        goodsSold: s.goodsSold + Math.floor(Math.random() * 8),
+        revenue: Math.max(780, Math.min(920, s.revenue + (Math.random() - 0.5) * 12)),
+        avgWatch: Math.max(30, Math.min(48, s.avgWatch + (Math.random() - 0.5) * 3)),
+        bounceRate: Math.max(8, Math.min(18, s.bounceRate + (Math.random() - 0.5) * 1.5)),
+        gifted: s.gifted + Math.floor((Math.random() - 0.3) * 12),
+        resold: s.resold + Math.floor((Math.random() - 0.3) * 5),
+        avgPrice: Math.max(28, Math.min(42, s.avgPrice + (Math.random() - 0.5) * 2)),
+        newFans: s.newFans + Math.floor((Math.random() - 0.3) * 20),
+        returning: Math.max(72, Math.min(86, s.returning + (Math.random() - 0.5) * 1.5)),
+        nps: Math.max(65, Math.min(80, s.nps + (Math.random() - 0.5) * 2)),
       }));
     }, 2000);
     return () => clearInterval(jitter);
@@ -58,41 +74,150 @@ function TeamConsole() {
     return Math.round(n).toString();
   };
 
-  const activities = [
-    [
-      { t: '0:42', ev: 'Drop "OT Game 7 — Signed" pushed to ' + fmtNum(stats.spaces) + ' spaces', tag: 'DROP' },
-      { t: '1:18', ev: 'Brunson 3PT moment saved by ' + fmtNum(stats.peak) + ' fans', tag: 'MOMENT' },
-      { t: '2:55', ev: '"Bench Cam" exclusive opened for premium', tag: 'EXCLUSIVE' },
-    ],
-    [
-      { t: '0:12', ev: fmtNum(stats.spaces) + ' fans currently inside spaces', tag: 'SPACES' },
-      { t: '0:45', ev: 'New space created: "Section 112 Crew"', tag: 'CREATE' },
-      { t: '1:30', ev: 'Peak concurrent: ' + fmtNum(stats.peak) + ' at tip-off', tag: 'PEAK' },
-    ],
-    [
-      { t: '0:08', ev: '"Signed Brunson" — ' + Math.round(stats.sellThrough) + '% sold through', tag: 'DROP' },
-      { t: '0:22', ev: '"Behind the Scenes" drop scheduled for Saturday', tag: 'SCHEDULED' },
-      { t: '0:55', ev: stats.drops + ' drops currently live', tag: 'LIVE' },
-    ],
-    [
-      { t: '0:15', ev: fmtNum(stats.moments) + ' moments saved this season', tag: 'MOMENT' },
-      { t: '0:38', ev: 'Top moment: Brunson Game 7 OT buzzer beater', tag: 'TRENDING' },
-      { t: '1:02', ev: 'Average ' + Math.round(stats.session) + ' moments saved per fan', tag: 'AVG' },
-    ],
-    [
-      { t: '0:05', ev: Math.round(stats.retention) + '% year-round retention rate', tag: 'RETENTION' },
-      { t: '0:20', ev: fmtNum(stats.peak) + ' peak concurrent tonight', tag: 'AUDIENCE' },
-      { t: '0:48', ev: 'Fan demographics: 18-34 primary segment', tag: 'SEGMENT' },
-    ],
+  const tabConfigs = [
+    // Dashboard
+    {
+      heading: 'Tonight at a glance',
+      eyebrow: 'DASHBOARD · OVERVIEW',
+      actionLabel: 'LAST 90D',
+      actionBtn: 'Push a drop',
+      topStats: [
+        { label: 'ACTIVE SPACES', value: fmtNum(stats.spaces), delta: '↗ +18% vs last home', positive: true },
+        { label: 'MOMENTS SAVED', value: fmtNum(stats.moments), delta: '↗ +34% game-over-game', positive: true },
+        { label: 'DROPS LIVE', value: stats.drops.toString(), delta: 'Avg sell-through ' + Math.round(stats.sellThrough) + '%', positive: true },
+      ],
+      chartLabel: 'ENGAGEMENT · LIVE',
+      chartTime: 'Q4 · 2:14',
+      chartPath: 'M 0 60 L 30 56 L 60 58 L 90 50 L 120 52 L 150 38 L 180 42 L 210 26 L 240 30 L 270 20 L 300 14 L 330 22 L 360 10 L 400 16',
+      bottomLeft: [
+        { val: (stats.peak / 1000).toFixed(1) + 'K', label: 'PEAK CONCURRENT' },
+        { val: Math.round(stats.session) + ' min', label: 'AVG SESSION' },
+      ],
+      bottomRight: { label: 'YEAR-ROUND ACTIVE', value: Math.round(stats.retention) + '%', delta: 'Off-season retention', positive: true },
+      activity: [
+        { t: '0:42', ev: 'Drop "OT Game 7 — Signed" pushed to ' + fmtNum(stats.spaces) + ' spaces', tag: 'DROP' },
+        { t: '1:18', ev: 'Brunson 3PT moment saved by ' + fmtNum(stats.peak) + ' fans', tag: 'MOMENT' },
+        { t: '2:55', ev: '"Bench Cam" exclusive opened for premium', tag: 'EXCLUSIVE' },
+      ],
+      activityLabel: 'LIVE ACTIVITY',
+      activityStatus: '● STREAMING',
+      activityStatusColor: '#a3d4a3',
+    },
+    // Spaces
+    {
+      heading: 'Active fan spaces',
+      eyebrow: 'SPACES · REAL-TIME',
+      actionLabel: 'TONIGHT',
+      actionBtn: 'Create space',
+      topStats: [
+        { label: 'LIVE VIEWERS', value: fmtNum(stats.liveViewers), delta: '↗ +22% vs tip-off', positive: true },
+        { label: 'TOTAL SPACES', value: fmtNum(stats.spaces), delta: '18 franchise spaces active', positive: true },
+        { label: 'AVG WATCH TIME', value: Math.round(stats.avgWatch) + 'm', delta: '↗ +8 min vs last game', positive: true },
+      ],
+      chartLabel: 'SPACE OCCUPANCY · LIVE',
+      chartTime: 'GAME 4 · Q4',
+      chartPath: 'M 0 70 L 30 64 L 60 55 L 90 48 L 120 40 L 150 35 L 180 28 L 210 32 L 240 25 L 270 22 L 300 18 L 330 20 L 360 15 L 400 12',
+      bottomLeft: [
+        { val: fmtNum(stats.peak), label: 'PEAK CONCURRENT' },
+        { val: Math.round(stats.bounceRate) + '%', label: 'BOUNCE RATE' },
+      ],
+      bottomRight: { label: 'PAST VIEWERS', value: fmtNum(stats.pastViewers), delta: 'Lifetime across all spaces', positive: true },
+      activity: [
+        { t: '0:12', ev: fmtNum(stats.liveViewers) + ' fans currently inside spaces', tag: 'SPACES' },
+        { t: '0:45', ev: 'New space created: "Section 112 Crew"', tag: 'CREATE' },
+        { t: '1:30', ev: 'Peak concurrent: ' + fmtNum(stats.peak) + ' at tip-off', tag: 'PEAK' },
+      ],
+      activityLabel: 'SPACE EVENTS',
+      activityStatus: '● LIVE',
+      activityStatusColor: '#a3d4a3',
+    },
+    // Drops
+    {
+      heading: 'Live drops & editions',
+      eyebrow: 'DROPS · COMMERCE',
+      actionLabel: 'ALL TIME',
+      actionBtn: 'New drop',
+      topStats: [
+        { label: 'GOODS SOLD', value: fmtNum(stats.goodsSold), delta: '↗ +412 tonight', positive: true },
+        { label: 'SELL-THROUGH', value: Math.round(stats.sellThrough) + '%', delta: 'Avg across ' + stats.drops + ' drops', positive: true },
+        { label: 'REVENUE', value: '$' + Math.round(stats.revenue) + 'K', delta: '↗ +26% vs projection', positive: true },
+      ],
+      chartLabel: 'DROP VELOCITY · PER HOUR',
+      chartTime: 'GAME DAY',
+      chartPath: 'M 0 65 L 30 60 L 60 52 L 90 58 L 120 30 L 150 22 L 180 18 L 210 24 L 240 20 L 270 28 L 300 34 L 330 40 L 360 45 L 400 50',
+      bottomLeft: [
+        { val: fmtNum(stats.gifted), label: 'GIFTED' },
+        { val: fmtNum(stats.resold), label: 'RESOLD ON MARKET' },
+      ],
+      bottomRight: { label: 'AVG PRICE', value: '$' + Math.round(stats.avgPrice), delta: 'Per collectible drop', positive: true },
+      activity: [
+        { t: '0:08', ev: '"Signed Brunson" — ' + Math.round(stats.sellThrough) + '% sold through', tag: 'DROP' },
+        { t: '0:22', ev: '"Behind the Scenes" drop scheduled for Saturday', tag: 'SCHEDULED' },
+        { t: '0:55', ev: stats.drops + ' drops currently live', tag: 'LIVE' },
+      ],
+      activityLabel: 'DROP FEED',
+      activityStatus: '● PROCESSING',
+      activityStatusColor: '#e8c87a',
+    },
+    // Moments
+    {
+      heading: 'Moment highlights',
+      eyebrow: 'MOMENTS · CAPTURES',
+      actionLabel: 'THIS SEASON',
+      actionBtn: 'Feature moment',
+      topStats: [
+        { label: 'MOMENTS SAVED', value: fmtNum(stats.moments), delta: '↗ +34% game-over-game', positive: true },
+        { label: 'AVG PER FAN', value: Math.round(stats.session).toString(), delta: 'Moments saved per session', positive: true },
+        { label: 'SHARES', value: fmtNum(Math.round(stats.moments * 0.18)), delta: '18% share rate', positive: true },
+      ],
+      chartLabel: 'MOMENT SAVES · TIMELINE',
+      chartTime: 'GAME 4',
+      chartPath: 'M 0 55 L 30 50 L 60 48 L 90 42 L 120 45 L 150 30 L 180 20 L 210 15 L 240 22 L 270 18 L 300 12 L 330 8 L 360 14 L 400 10',
+      bottomLeft: [
+        { val: '4.8★', label: 'AVG MOMENT RATING' },
+        { val: '62%', label: 'KEPT > 30 DAYS' },
+      ],
+      bottomRight: { label: 'TRENDING MOMENT', value: '#1', delta: 'Brunson OT buzzer beater', positive: true },
+      activity: [
+        { t: '0:15', ev: fmtNum(stats.moments) + ' moments saved this season', tag: 'MOMENT' },
+        { t: '0:38', ev: 'Top moment: Brunson Game 7 OT buzzer beater', tag: 'TRENDING' },
+        { t: '1:02', ev: 'Average ' + Math.round(stats.session) + ' moments saved per fan', tag: 'AVG' },
+      ],
+      activityLabel: 'MOMENT STREAM',
+      activityStatus: '● CAPTURING',
+      activityStatusColor: '#a3d4a3',
+    },
+    // Audience
+    {
+      heading: 'Audience insights',
+      eyebrow: 'AUDIENCE · ANALYTICS',
+      actionLabel: 'LAST 30D',
+      actionBtn: 'Export report',
+      topStats: [
+        { label: 'NEW FANS', value: fmtNum(stats.newFans), delta: '↗ +340 this week', positive: true },
+        { label: 'RETURNING', value: Math.round(stats.returning) + '%', delta: 'Return within 7 days', positive: true },
+        { label: 'FAN NPS', value: Math.round(stats.nps).toString(), delta: '↗ +6 pts vs last quarter', positive: true },
+      ],
+      chartLabel: 'FAN GROWTH · WEEKLY',
+      chartTime: '12 WEEKS',
+      chartPath: 'M 0 70 L 30 68 L 60 62 L 90 58 L 120 50 L 150 48 L 180 40 L 210 35 L 240 28 L 270 22 L 300 18 L 330 14 L 360 12 L 400 8',
+      bottomLeft: [
+        { val: '18–34', label: 'PRIMARY SEGMENT' },
+        { val: '64%', label: 'MOBILE USERS' },
+      ],
+      bottomRight: { label: 'YEAR-ROUND RETENTION', value: Math.round(stats.retention) + '%', delta: 'Off-season active rate', positive: true },
+      activity: [
+        { t: '0:05', ev: Math.round(stats.retention) + '% year-round retention rate', tag: 'RETENTION' },
+        { t: '0:20', ev: fmtNum(stats.newFans) + ' new fans acquired this week', tag: 'GROWTH' },
+        { t: '0:48', ev: 'Fan demographics: 18-34 primary segment', tag: 'SEGMENT' },
+      ],
+      activityLabel: 'AUDIENCE SIGNALS',
+      activityStatus: '● TRACKING',
+      activityStatusColor: '#7ab8e8',
+    },
   ];
 
-  const headings = [
-    'Tonight at a glance',
-    'Active fan spaces',
-    'Live drops & editions',
-    'Moment highlights',
-    'Audience insights',
-  ];
+  const cfg = tabConfigs[activeTab] || tabConfigs[0];
 
   const sidebarItem = (label, active, idx) => (
     <div ref={el => tabRefs.current[idx] = el} style={{
@@ -121,15 +246,15 @@ function TeamConsole() {
   );
 
   return (
-    <div ref={containerRef} style={{
+    <div ref={containerRef} className="console-container" style={{
       width: 1080, maxWidth: '100%', borderRadius: 14, overflow: 'hidden',
       background: '#040a16', border: '1px solid rgba(243,238,226,0.08)',
       boxShadow: '0 50px 120px rgba(0,0,0,0.55), 0 0 0 1px rgba(232,200,122,0.06)',
       fontFamily: 'Geist, system-ui, sans-serif', color: '#f3eee2',
       position: 'relative',
     }}>
-      {/* Animated cursor */}
-      <div style={{
+      {/* Animated cursor — hidden on mobile */}
+      <div className="console-cursor" style={{
         position: 'absolute', zIndex: 100, pointerEvents: 'none',
         left: cursorPos.x, top: cursorPos.y,
         transition: 'left 0.9s cubic-bezier(0.23, 1, 0.32, 1), top 0.9s cubic-bezier(0.23, 1, 0.32, 1)',
@@ -157,26 +282,28 @@ function TeamConsole() {
             <div style={{ width: 11, height: 11, borderRadius: 999, background: 'rgba(243,238,226,0.18)' }} />
             <div style={{ width: 11, height: 11, borderRadius: 999, background: 'rgba(243,238,226,0.18)' }} />
           </div>
-          <div style={{ width: 1, height: 18, background: 'rgba(243,238,226,0.08)', margin: '0 10px' }} />
-          <div style={{ fontSize: 11.5, fontFamily: 'Geist Mono, monospace', letterSpacing: '0.06em', color: 'rgba(243,238,226,0.6)' }}>
-            console.spaciom.io <span style={{ color: 'rgba(243,238,226,0.35)' }}>/ knicks</span>
+          <div className="console-url" style={{ display: 'flex', alignItems: 'center' }}>
+            <div style={{ width: 1, height: 18, background: 'rgba(243,238,226,0.08)', margin: '0 10px' }} />
+            <div style={{ fontSize: 11.5, fontFamily: 'Geist Mono, monospace', letterSpacing: '0.06em', color: 'rgba(243,238,226,0.6)' }}>
+              console.spaciom.io <span style={{ color: 'rgba(243,238,226,0.35)' }}>/ knicks</span>
+            </div>
           </div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: 'rgba(243,238,226,0.55)', fontFamily: 'Geist Mono, monospace', letterSpacing: '0.06em' }}>
             <div style={{ width: 6, height: 6, borderRadius: 99, background: '#a3d4a3' }} />
-            LIVE · GAME 4
+            <span className="console-live-label">LIVE · GAME 4</span>
           </div>
         </div>
       </div>
 
-      <div style={{ display: 'flex', minHeight: 460 }}>
+      <div className="console-body" style={{ display: 'flex', minHeight: 460 }}>
         {/* Sidebar */}
-        <div style={{ width: 200, padding: '20px 12px', borderRight: '1px solid rgba(243,238,226,0.06)', background: '#030a18' }}>
+        <div className="console-sidebar" style={{ width: 200, padding: '20px 12px', borderRight: '1px solid rgba(243,238,226,0.06)', background: '#030a18', flexShrink: 0 }}>
           <div style={{ padding: '0 12px 18px' }}>
             <div style={{ fontSize: 11, fontFamily: 'Geist Mono, monospace', letterSpacing: '0.18em', color: 'rgba(243,238,226,0.4)', marginBottom: 10 }}>FRANCHISE</div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div style={{ width: 24, height: 24, borderRadius: 6, background: '#1f3c8a' }} />
+              <div style={{ width: 24, height: 24, borderRadius: 6, background: '#1f3c8a', flexShrink: 0 }} />
               <div>
                 <div style={{ fontSize: 13, letterSpacing: '-0.005em' }}>New York</div>
                 <div style={{ fontSize: 10.5, color: 'rgba(243,238,226,0.5)' }}>Active · 18 spaces</div>
@@ -188,43 +315,43 @@ function TeamConsole() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             {tabs.map((t, i) => sidebarItem(t, i === activeTab, i))}
           </div>
-          <div style={{ padding: '20px 12px 10px', fontSize: 10, fontFamily: 'Geist Mono, monospace', letterSpacing: '0.2em', color: 'rgba(243,238,226,0.4)' }}>OPERATE</div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <div className="console-operate" style={{ padding: '20px 12px 10px', fontSize: 10, fontFamily: 'Geist Mono, monospace', letterSpacing: '0.2em', color: 'rgba(243,238,226,0.4)' }}>OPERATE</div>
+          <div className="console-operate-items" style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             {sidebarItem('Live Layer', false, -1)}
             {sidebarItem('Schedule', false, -2)}
             {sidebarItem('Insights', false, -3)}
           </div>
         </div>
 
-        {/* Main */}
-        <div style={{ flex: 1, padding: '24px 28px 28px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 22 }}>
+        {/* Main — completely changes per tab */}
+        <div className="console-main" style={{ flex: 1, padding: '24px 28px 28px', overflow: 'hidden' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 22, flexWrap: 'wrap', gap: 12 }}>
             <div>
               <div style={{ fontSize: 11, fontFamily: 'Geist Mono, monospace', letterSpacing: '0.18em', color: 'rgba(243,238,226,0.45)', transition: 'opacity 0.3s' }}>
-                {tabs[activeTab].toUpperCase()} · STATISTICS
+                {cfg.eyebrow}
               </div>
-              <div style={{ fontSize: 24, fontWeight: 500, letterSpacing: '-0.025em', marginTop: 6, transition: 'opacity 0.3s' }}>{headings[activeTab]}</div>
+              <div style={{ fontSize: 24, fontWeight: 500, letterSpacing: '-0.025em', marginTop: 6, transition: 'opacity 0.3s' }}>{cfg.heading}</div>
             </div>
             <div style={{ display: 'flex', gap: 8 }}>
-              <div style={{ fontSize: 11.5, color: 'rgba(243,238,226,0.6)', padding: '8px 12px', border: '1px solid rgba(243,238,226,0.1)', borderRadius: 6, fontFamily: 'Geist Mono, monospace', letterSpacing: '0.04em' }}>LAST 90D</div>
-              <div style={{ fontSize: 11.5, color: '#1a1408', padding: '8px 14px', background: '#e8c87a', borderRadius: 6, fontFamily: 'Geist, sans-serif', fontWeight: 500 }}>Push a drop</div>
+              <div style={{ fontSize: 11.5, color: 'rgba(243,238,226,0.6)', padding: '8px 12px', border: '1px solid rgba(243,238,226,0.1)', borderRadius: 6, fontFamily: 'Geist Mono, monospace', letterSpacing: '0.04em' }}>{cfg.actionLabel}</div>
+              <div style={{ fontSize: 11.5, color: '#1a1408', padding: '8px 14px', background: '#e8c87a', borderRadius: 6, fontFamily: 'Geist, sans-serif', fontWeight: 500, whiteSpace: 'nowrap' }}>{cfg.actionBtn}</div>
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
-            {stat('ACTIVE SPACES', fmtNum(stats.spaces), '↗ +18% vs last home')}
-            {stat('MOMENTS SAVED', fmtNum(stats.moments), '↗ +34% game-over-game')}
-            {stat('DROPS LIVE', stats.drops.toString(), 'Avg sell-through ' + Math.round(stats.sellThrough) + '%')}
+          <div className="console-stats-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+            {cfg.topStats.map((s, i) => (
+              <div key={activeTab + '-stat-' + i}>{stat(s.label, s.value, s.delta, s.positive)}</div>
+            ))}
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 12, marginTop: 12 }}>
+          <div className="console-chart-row" style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 12, marginTop: 12 }}>
             <div style={{
               background: '#081428', border: '1px solid rgba(243,238,226,0.06)',
               borderRadius: 10, padding: '20px 22px', minHeight: 160,
               display: 'flex', flexDirection: 'column',
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                <div style={{ fontFamily: 'Geist Mono, monospace', fontSize: 10.5, letterSpacing: '0.18em', color: 'rgba(243,238,226,0.5)' }}>ENGAGEMENT · LIVE</div>
-                <div style={{ fontSize: 11, color: 'rgba(243,238,226,0.5)', fontFamily: 'Geist Mono, monospace' }}>Q4 · 2:14</div>
+                <div style={{ fontFamily: 'Geist Mono, monospace', fontSize: 10.5, letterSpacing: '0.18em', color: 'rgba(243,238,226,0.5)' }}>{cfg.chartLabel}</div>
+                <div style={{ fontSize: 11, color: 'rgba(243,238,226,0.5)', fontFamily: 'Geist Mono, monospace' }}>{cfg.chartTime}</div>
               </div>
               <svg viewBox="0 0 400 80" style={{ width: '100%', height: 80 }} preserveAspectRatio="none">
                 <defs>
@@ -233,31 +360,29 @@ function TeamConsole() {
                     <stop offset="1" stopColor="#e8c87a" stopOpacity="0"/>
                   </linearGradient>
                 </defs>
-                <path d="M 0 60 L 30 56 L 60 58 L 90 50 L 120 52 L 150 38 L 180 42 L 210 26 L 240 30 L 270 20 L 300 14 L 330 22 L 360 10 L 400 16 L 400 80 L 0 80 Z" fill="url(#cf)"/>
-                <path d="M 0 60 L 30 56 L 60 58 L 90 50 L 120 52 L 150 38 L 180 42 L 210 26 L 240 30 L 270 20 L 300 14 L 330 22 L 360 10 L 400 16" fill="none" stroke="#e8c87a" strokeWidth="1.5"/>
+                <path d={cfg.chartPath + ' L 400 80 L 0 80 Z'} fill="url(#cf)"/>
+                <path d={cfg.chartPath} fill="none" stroke="#e8c87a" strokeWidth="1.5"/>
               </svg>
               <div style={{ marginTop: 'auto', display: 'flex', gap: 24, paddingTop: 12, borderTop: '1px solid rgba(243,238,226,0.05)' }}>
-                <div>
-                  <div style={{ fontSize: 18, fontWeight: 500, letterSpacing: '-0.02em' }}>{(stats.peak / 1000).toFixed(1)}K</div>
-                  <div style={{ fontSize: 10.5, color: 'rgba(243,238,226,0.5)', fontFamily: 'Geist Mono, monospace', letterSpacing: '0.1em' }}>PEAK CONCURRENT</div>
-                </div>
-                <div>
-                  <div style={{ fontSize: 18, fontWeight: 500, letterSpacing: '-0.02em' }}>{Math.round(stats.session)} min</div>
-                  <div style={{ fontSize: 10.5, color: 'rgba(243,238,226,0.5)', fontFamily: 'Geist Mono, monospace', letterSpacing: '0.1em' }}>AVG SESSION</div>
-                </div>
+                {cfg.bottomLeft.map((bl, i) => (
+                  <div key={i}>
+                    <div style={{ fontSize: 18, fontWeight: 500, letterSpacing: '-0.02em' }}>{bl.val}</div>
+                    <div style={{ fontSize: 10.5, color: 'rgba(243,238,226,0.5)', fontFamily: 'Geist Mono, monospace', letterSpacing: '0.1em' }}>{bl.label}</div>
+                  </div>
+                ))}
               </div>
             </div>
-            {stat('YEAR-ROUND ACTIVE', Math.round(stats.retention) + '%', 'Off-season retention')}
+            {stat(cfg.bottomRight.label, cfg.bottomRight.value, cfg.bottomRight.delta, cfg.bottomRight.positive)}
           </div>
 
           <div style={{ marginTop: 18, background: '#081428', border: '1px solid rgba(243,238,226,0.06)', borderRadius: 10, padding: '16px 20px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-              <div style={{ fontFamily: 'Geist Mono, monospace', fontSize: 10.5, letterSpacing: '0.18em', color: 'rgba(243,238,226,0.5)' }}>LIVE ACTIVITY</div>
-              <div style={{ fontSize: 11, color: '#a3d4a3', fontFamily: 'Geist Mono, monospace', letterSpacing: '0.1em' }}>● STREAMING</div>
+              <div style={{ fontFamily: 'Geist Mono, monospace', fontSize: 10.5, letterSpacing: '0.18em', color: 'rgba(243,238,226,0.5)' }}>{cfg.activityLabel}</div>
+              <div style={{ fontSize: 11, color: cfg.activityStatusColor, fontFamily: 'Geist Mono, monospace', letterSpacing: '0.1em' }}>{cfg.activityStatus}</div>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              {(activities[activeTab] || activities[0]).map((r, i) => (
-                <div key={activeTab + '-' + i} style={{ display: 'grid', gridTemplateColumns: '50px 80px 1fr', alignItems: 'center', padding: '8px 0', borderTop: i === 0 ? 'none' : '1px solid rgba(243,238,226,0.05)', animation: 'fadeIn 0.4s ease' }}>
+            <div className="console-activity" style={{ display: 'flex', flexDirection: 'column' }}>
+              {cfg.activity.map((r, i) => (
+                <div key={activeTab + '-' + i} className="console-activity-row" style={{ display: 'grid', gridTemplateColumns: '50px 80px 1fr', alignItems: 'center', padding: '8px 0', borderTop: i === 0 ? 'none' : '1px solid rgba(243,238,226,0.05)', animation: 'fadeIn 0.4s ease' }}>
                   <span style={{ fontSize: 11, fontFamily: 'Geist Mono, monospace', color: 'rgba(243,238,226,0.5)' }}>{r.t}</span>
                   <span style={{ fontSize: 10, fontFamily: 'Geist Mono, monospace', letterSpacing: '0.16em', color: '#e8c87a' }}>{r.tag}</span>
                   <span style={{ fontSize: 13, letterSpacing: '-0.005em' }}>{r.ev}</span>

@@ -917,14 +917,65 @@ main { position: relative; z-index: 1; }
 @media (max-width: 900px) {
   :root { --pad-x: 24px; }
   .nav { display: none; }
+  .btn-gold { font-size: 13px; padding: 10px 16px; }
   .stats-row { grid-template-columns: 1fr; }
   .stat { border-right: none; border-bottom: 1px solid var(--line); }
+  .stat-big { font-size: 48px; }
   .vp-block { grid-template-columns: 1fr; gap: 24px; }
   .moments-grid { grid-template-columns: 1fr; }
-  .tb-block { grid-template-columns: 1fr; gap: 16px; }
+  .moment { padding: 40px 28px 36px; min-height: auto; }
+  .tb-block { grid-template-columns: 1fr; gap: 16px; padding: 48px 0; }
+  .tb-letter { font-size: 40px; }
   .why-grid { grid-template-columns: 1fr; }
+  .why-card { padding: 36px 28px 40px; min-height: auto; }
   .team-grid { grid-template-columns: repeat(2, 1fr); }
-  .footer-grid { grid-template-columns: 1fr 1fr; }
+  .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
+  .footer .brand-big { font-size: 36px; }
+  .footer-bottom { flex-direction: column; gap: 8px; text-align: center; }
   html, body, * { cursor: auto !important; }
   .cursor-glow, .cursor-dot, .cursor-trail { display: none; }
+
+  /* Hero mobile */
+  .hero { padding-top: 100px; padding-bottom: 80px; }
+  .hero h1 { font-size: clamp(44px, 12vw, 80px); }
+  .hero-body { font-size: 16px; }
+  .hero-actions { flex-direction: column; gap: 10px; }
+  .hero-actions .btn-gold, .hero-actions .btn-ghost { width: 100%; justify-content: center; }
+
+  /* Section mobile */
+  .section { padding: 100px 0; }
+  .section-big { padding: 120px 0 100px; min-height: auto; }
+  .section-head { grid-template-columns: 1fr; gap: 12px; }
+  .section-num { font-size: 12px; }
+  .section-title { font-size: clamp(32px, 8vw, 48px); }
+
+  /* Phone trio mobile */
+  .phones { flex-direction: column; align-items: center; gap: 48px; }
+
+  /* Console mobile */
+  .console-wrap { margin-top: 40px; }
+  .console-container { width: 100% !important; }
+  .console-cursor { display: none !important; }
+  .console-body { flex-direction: column; min-height: auto !important; }
+  .console-sidebar { width: 100% !important; border-right: none !important; border-bottom: 1px solid rgba(243,238,226,0.06); padding: 16px 12px !important; }
+  .console-operate, .console-operate-items { display: none !important; }
+  .console-main { padding: 20px 16px 20px !important; }
+  .console-stats-row { grid-template-columns: 1fr !important; }
+  .console-chart-row { grid-template-columns: 1fr !important; }
+  .console-url { display: none !important; }
+  .console-live-label { font-size: 10px; }
+  .console-activity-row { grid-template-columns: 40px 60px 1fr !important; }
+
+  /* CTA mobile */
+  .cta-section { padding: 100px 0 80px; }
+  .cta-section h2 { font-size: clamp(40px, 10vw, 80px); }
+  .cta-section p { font-size: 16px; }
+}
+
+@media (max-width: 500px) {
+  :root { --pad-x: 16px; }
+  .team-grid { grid-template-columns: 1fr; }
+  .footer-grid { grid-template-columns: 1fr; gap: 24px; }
+  .section-head { margin-bottom: 40px; }
+  .big-foot { gap: 24px; padding-top: 20px; }
 }

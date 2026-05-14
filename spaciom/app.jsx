@@ -533,7 +533,7 @@ function Moments() {
         <div className="section-num">03</div>
         <div>
           <div className="section-kicker">MOMENTS</div>
-          <h2 className="section-title">Five ways your fandom <span className="serif-italic" style={{ color: 'var(--gold)' }}>lives forward.</span></h2>
+          <h2 className="section-title">Ways your fandom <span className="serif-italic" style={{ color: 'var(--gold)' }}>lives forward.</span></h2>
           <p style={{ marginTop: 28, fontSize: 18, color: 'var(--ink-soft)', maxWidth: 620, lineHeight: 1.55, letterSpacing: '-0.005em' }}>
             Every feature ladders up to one promise — your time, your team, your memories. Kept.
           </p>
