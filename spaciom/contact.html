@@ -10,6 +10,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css" />
 <style>
+/* Restore normal cursor on contact page */
+html, body, * { cursor: auto !important; }
+.cursor-glow, .cursor-dot, .cursor-trail { display: none !important; }
+
 /* Page transition overlay */
 .page-transition {
   position: fixed;
@@ -170,7 +174,7 @@ function Header() {
           <a href="./#moments" onClick={(e) => handleNavClick(e, 'moments')}>MOMENTS</a>
           <a href="./#team" onClick={(e) => handleNavClick(e, 'team')}>TEAM</a>
         </nav>
-        <a href="contact.html" className="btn-gold" style={{ opacity: 0.5, pointerEvents: 'none' }}>Get in touch <ArrowRight /></a>
+        <span style={{ display: 'none' }}></span>
       </div>
     </header>
   );

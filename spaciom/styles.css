@@ -519,12 +519,20 @@ button { font-family: inherit; cursor: pointer; }
   border-radius: 4px;
   display: flex; align-items: center; justify-content: center;
   position: relative;
+  overflow: hidden;
+}
+.team-photo[style*="background-image"] {
+  background: none !important;
+  border-color: rgba(243,238,226,0.06);
 }
 .team-photo::after {
   content: "PORTRAIT";
   font-family: var(--mono); font-size: 9.5px;
   letter-spacing: 0.2em;
   color: var(--ink-faint);
+}
+.team-photo[style*="background-image"]::after {
+  display: none;
 }
 .team-name {
   font-family: var(--sans); font-weight: 500;
