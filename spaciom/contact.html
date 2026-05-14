@@ -156,11 +156,6 @@ function navigateToMain(hash) {
 }
 
 function Header() {
-  const handleNavClick = (e, section) => {
-    e.preventDefault();
-    navigateToMain(section);
-  };
-
   return (
     <header className="header">
       <div className="container header-inner">
@@ -168,13 +163,13 @@ function Header() {
           <span className="mark"></span>
           SPACIOM
         </a>
-        <nav className="nav">
-          <a href="./#vision" onClick={(e) => handleNavClick(e, 'vision')}>VISION</a>
-          <a href="./#product" onClick={(e) => handleNavClick(e, 'product')}>PRODUCT</a>
-          <a href="./#moments" onClick={(e) => handleNavClick(e, 'moments')}>MOMENTS</a>
-          <a href="./#team" onClick={(e) => handleNavClick(e, 'team')}>TEAM</a>
-        </nav>
-        <span style={{ display: 'none' }}></span>
+        <a href="./" className="btn-ghost" onClick={(e) => { e.preventDefault(); navigateToMain(''); }}
+           style={{ fontSize: 13, padding: '10px 20px' }}>
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ display: 'inline-block', verticalAlign: 'middle' }}>
+            <path d="M12 7H2M2 7L6.5 2.5M2 7L6.5 11.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+          Back to home
+        </a>
       </div>
     </header>
   );

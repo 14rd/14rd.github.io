@@ -638,13 +638,13 @@ function WhySpaciom() {
 // ─── Team ────────────────────────────────────────────────────
 function Team() {
   const people = [
-    { n: 'Timothy Parker',  r: 'Chief Executive Officer',    tag: 'CEO',         img: 'team/tim.png' },
-    { n: 'Bayo Okusanya',   r: 'Co-Chief Executive Officer', tag: 'Co-CEO',      img: 'team/bayo.png' },
-    { n: 'Tyrice Johnson',  r: 'Chief Business Development Officer', tag: 'CBDO', img: 'team/tyrice.png' },
-    { n: 'Jeremie Joncas',  r: 'Chief Operating Officer',    tag: 'COO',         img: 'team/jeremie.png' },
-    { n: 'Jose Gomez',      r: 'Chief Financial Officer',    tag: 'CFO',         img: 'team/jose.png' },
+    { n: 'Timothy Parker',  r: 'Chief Executive Officer',    tag: 'CEO',         img: '/spaciom/team/tim.png' },
+    { n: 'Bayo Okusanya',   r: 'Co-Chief Executive Officer', tag: 'Co-CEO',      img: '/spaciom/team/bayo.png' },
+    { n: 'Tyrice Johnson',  r: 'Chief Business Development Officer', tag: 'CBDO', img: '/spaciom/team/tyrice.png' },
+    { n: 'Jeremie Joncas',  r: 'Chief Operating Officer',    tag: 'COO',         img: '/spaciom/team/jeremie.png' },
+    { n: 'Jose Gomez',      r: 'Chief Financial Officer',    tag: 'CFO',         img: '/spaciom/team/jose.png' },
     { n: 'James Jefferys',  r: 'Chief Creative Officer',     tag: 'CCO' },
-    { n: 'Tiffanye Paige',  r: 'Executive Creative Officer', tag: 'Creative',    img: 'team/tiffanye.png' },
+    { n: 'Tiffanye Paige',  r: 'Executive Creative Officer', tag: 'Creative',    img: '/spaciom/team/tiffanye.png' },
     { n: 'Zach Pouge',      r: 'CTO Strategic Advisor',      tag: 'CTO Advisor' },
   ];
   return (
