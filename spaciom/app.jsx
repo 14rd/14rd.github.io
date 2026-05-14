@@ -666,9 +666,9 @@ function Team() {
             <div className="team-card tilt-card" data-tilt style={{ position: 'relative' }}>
               <div className="tilt-shine"></div>
               {p.img ? (
-                <div className="team-photo" style={{ backgroundImage: 'url(' + p.img + ')', backgroundSize: 'cover', backgroundPosition: 'center top' }}></div>
+                <div className="team-photo" style={{ backgroundImage: 'url(' + p.img + ')', backgroundSize: 'cover', backgroundPosition: 'center top', border: '1px solid rgba(243,238,226,0.06)' }}></div>
               ) : (
-                <div className="team-photo"></div>
+                <div className="team-photo team-photo-placeholder"></div>
               )}
               <div>
                 <div className="team-tag">{p.tag}</div>

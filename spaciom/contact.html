@@ -10,10 +10,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css" />
 <style>
-/* Restore normal cursor on contact page */
-html, body, * { cursor: auto !important; }
-.cursor-glow, .cursor-dot, .cursor-trail { display: none !important; }
-
 /* Page transition overlay */
 .page-transition {
   position: fixed;
@@ -137,6 +133,59 @@ if (sessionStorage.getItem('vs_proto_spaciom') !== '1') {
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/lenis@1.1.20/dist/lenis.min.js"></script>
 <script type="text/babel">
+
+function CustomCursor() {
+  const glowRef = React.useRef(null);
+  const dotRef = React.useRef(null);
+  const mouse = React.useRef({ x: -100, y: -100 });
+  const glowPos = React.useRef({ x: -100, y: -100 });
+
+  React.useEffect(() => {
+    const isMobile = window.matchMedia('(max-width: 900px)').matches;
+    if (isMobile) return;
+    const onMove = (e) => {
+      mouse.current = { x: e.clientX, y: e.clientY };
+      if (dotRef.current) {
+        dotRef.current.style.left = e.clientX + 'px';
+        dotRef.current.style.top = e.clientY + 'px';
+      }
+    };
+    const onOver = (e) => {
+      if (e.target.closest('a, button, input, textarea, select') && glowRef.current) glowRef.current.classList.add('hovering');
+    };
+    const onOut = (e) => {
+      if (e.target.closest('a, button, input, textarea, select') && glowRef.current) glowRef.current.classList.remove('hovering');
+    };
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseover', onOver);
+    document.addEventListener('mouseout', onOut);
+    let frame;
+    const animate = () => {
+      const gp = glowPos.current;
+      gp.x += (mouse.current.x - gp.x) * 0.12;
+      gp.y += (mouse.current.y - gp.y) * 0.12;
+      if (glowRef.current) {
+        glowRef.current.style.left = gp.x + 'px';
+        glowRef.current.style.top = gp.y + 'px';
+      }
+      frame = requestAnimationFrame(animate);
+    };
+    frame = requestAnimationFrame(animate);
+    return () => {
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseover', onOver);
+      document.removeEventListener('mouseout', onOut);
+      cancelAnimationFrame(frame);
+    };
+  }, []);
+
+  return (
+    <>
+      <div className="cursor-glow" ref={glowRef} />
+      <div className="cursor-dot" ref={dotRef} />
+    </>
+  );
+}
 
 function ArrowRight({ size = 14 }) {
   return (
@@ -324,6 +373,7 @@ function App() {
 
   return (
     <>
+      <CustomCursor />
       <Header />
       <main style={{ position: 'relative', zIndex: 1 }}>
         <ContactForm />
