@@ -3,63 +3,268 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Spaciom — The Spatial Fandom Experience</title>
-<meta name="description" content="The infrastructure layer for fan engagement. Phone. Desktop. Headset.">
+<title>Vector Studio — Prototypes</title>
+<meta name="description" content="Vector Studio client prototype access.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://prototypes.vectorstudio.global/">
-<meta property="og:title" content="Spaciom — The Spatial Fandom Experience">
-<meta property="og:description" content="The infrastructure layer for fan engagement. Phone. Desktop. Headset.">
+<meta property="og:title" content="Vector Studio — Prototypes">
+<meta property="og:description" content="Client prototype access portal.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --surface: #111111;
+    --border: rgba(255,255,255,0.08);
+    --border-focus: rgba(255,255,255,0.20);
+    --text: #e8e8e8;
+    --text-soft: rgba(255,255,255,0.55);
+    --text-mute: rgba(255,255,255,0.35);
+    --accent: #e8e8e8;
+    --sans: "Inter", -apple-system, system-ui, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  .portal {
+    width: 100%;
+    max-width: 380px;
+  }
+
+  .portal-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 48px;
+  }
+
+  .portal-logo {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: var(--text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .portal-logo svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .portal-name {
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+
+  .portal-tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-mute);
+    margin-left: auto;
+  }
+
+  .portal h1 {
+    font-size: 28px;
+    font-weight: 500;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+    margin-bottom: 12px;
+  }
+
+  .portal-sub {
+    font-size: 15px;
+    color: var(--text-soft);
+    line-height: 1.5;
+    margin-bottom: 40px;
+    letter-spacing: -0.005em;
+  }
+
+  .field-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-mute);
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .field {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 13px 16px;
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 14px;
+    letter-spacing: -0.005em;
+    outline: none;
+    transition: border-color 0.2s;
+    margin-bottom: 20px;
+  }
+
+  .field::placeholder { color: var(--text-mute); }
+  .field:focus { border-color: var(--border-focus); }
+
+  .submit-btn {
+    width: 100%;
+    padding: 13px 20px;
+    background: var(--text);
+    color: var(--bg);
+    font-family: var(--sans);
+    font-weight: 500;
+    font-size: 14px;
+    letter-spacing: -0.005em;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: opacity 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 4px;
+  }
+
+  .submit-btn:hover { opacity: 0.85; }
+
+  .error-msg {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    color: #f87171;
+    margin-top: 16px;
+    min-height: 18px;
+    text-align: center;
+  }
+
+  .portal-footer {
+    margin-top: 56px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .portal-footer span {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-mute);
+  }
+
+  .portal-footer a {
+    font-size: 13px;
+    color: var(--text-soft);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+
+  .portal-footer a:hover { color: var(--text); }
+</style>
 </head>
 <body>
 
-<!-- Login Gate -->
-<div class="login-overlay" id="loginOverlay">
-  <div class="login-box">
-    <div class="login-mark"></div>
-    <h1>SPACIOM</h1>
-    <div class="login-sub">Vector Prototype Access</div>
-    <form id="loginForm" onsubmit="return handleLogin(event)">
-      <input class="login-field" type="text" id="loginUser" placeholder="Username" autocomplete="off" autofocus />
-      <input class="login-field" type="password" id="loginPass" placeholder="Password" autocomplete="off" />
-      <button type="submit" class="btn-gold login-submit">Enter <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="display:inline-block;vertical-align:middle"><path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-    </form>
-    <div class="login-error" id="loginError"></div>
+<div class="portal">
+  <div class="portal-brand">
+    <div class="portal-logo">
+      <svg viewBox="0 0 16 16" fill="none">
+        <path d="M3 3h10v10H3z" fill="#0a0a0a" stroke="#0a0a0a" stroke-width="1"/>
+        <path d="M5 5l6 6M11 5l-6 6" stroke="#0a0a0a" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <span class="portal-name">Vector Studio</span>
+    <span class="portal-tag">Prototypes</span>
+  </div>
+
+  <h1>Client access.</h1>
+  <p class="portal-sub">Enter the credentials provided by your team to view the prototype.</p>
+
+  <form id="loginForm" onsubmit="return handleLogin(event)">
+    <label class="field-label" for="loginUser">Username</label>
+    <input class="field" type="text" id="loginUser" placeholder="Enter username" autocomplete="off" autofocus />
+    <label class="field-label" for="loginPass">Password</label>
+    <input class="field" type="password" id="loginPass" placeholder="Enter password" autocomplete="off" />
+    <button type="submit" class="submit-btn">
+      Continue
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </form>
+  <div class="error-msg" id="loginError"></div>
+
+  <div class="portal-footer">
+    <span>&copy; 2025 Vector Studio</span>
+    <a href="https://vectorstudio.global">vectorstudio.global</a>
   </div>
 </div>
 
 <script>
+/*
+  CLIENT REGISTRY
+  Add new clients here. Each entry maps credentials to a prototype folder.
+  The session key prevents direct URL access without logging in first.
+*/
+var CLIENTS = [
+  {
+    username: 'vectorprototype',
+    password: 'spaciomnpclabs',
+    path: '/spaciom/',
+    sessionKey: 'vs_proto_spaciom'
+  }
+  // To add a new client:
+  // {
+  //   username: 'clientname',
+  //   password: 'securepassword',
+  //   path: '/clientfolder/',
+  //   sessionKey: 'vs_proto_clientname'
+  // }
+];
+
 function handleLogin(e) {
   e.preventDefault();
-  var u = document.getElementById('loginUser').value.trim();
+  var u = document.getElementById('loginUser').value.trim().toLowerCase();
   var p = document.getElementById('loginPass').value;
-  if (u === 'vectorprototype' && p === 'spaciomnpclabs') {
-    document.getElementById('loginOverlay').classList.add('hidden');
-    sessionStorage.setItem('spaciom_auth', '1');
-  } else {
-    document.getElementById('loginError').textContent = 'Invalid credentials';
-    document.getElementById('loginPass').value = '';
+  var errorEl = document.getElementById('loginError');
+
+  for (var i = 0; i < CLIENTS.length; i++) {
+    if (u === CLIENTS[i].username && p === CLIENTS[i].password) {
+      sessionStorage.setItem(CLIENTS[i].sessionKey, '1');
+      window.location.href = CLIENTS[i].path;
+      return false;
+    }
   }
+
+  errorEl.textContent = 'Invalid credentials';
+  document.getElementById('loginPass').value = '';
   return false;
-}
-if (sessionStorage.getItem('spaciom_auth') === '1') {
-  document.getElementById('loginOverlay').classList.add('hidden');
 }
 </script>
 
-<div id="root"></div>
-
-<script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin="anonymous"></script>
-<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin="anonymous"></script>
-<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
-<script src="https://unpkg.com/lenis@1.1.20/dist/lenis.min.js"></script>
-
-<script type="text/babel" src="ios-frame.jsx"></script>
-<script type="text/babel" src="phones.jsx"></script>
-<script type="text/babel" src="console.jsx"></script>
-<script type="text/babel" src="app.jsx"></script>
 </body>
 </html>
