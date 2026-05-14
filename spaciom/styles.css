@@ -374,9 +374,9 @@ button { font-family: inherit; cursor: pointer; }
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 1px;
-  background: var(--line);
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
+  background: rgba(243,238,226,0.04);
+  border-top: 1px solid rgba(243,238,226,0.04);
+  border-bottom: 1px solid rgba(243,238,226,0.04);
 }
 .moment {
   background: var(--bg);
@@ -466,8 +466,8 @@ button { font-family: inherit; cursor: pointer; }
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 1px;
-  background: var(--line);
-  border: 1px solid var(--line);
+  background: rgba(243,238,226,0.04);
+  border: 1px solid rgba(243,238,226,0.04);
 }
 .why-card {
   background: var(--bg);
@@ -501,9 +501,9 @@ button { font-family: inherit; cursor: pointer; }
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 1px;
-  background: var(--line);
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
+  background: rgba(243,238,226,0.04);
+  border-top: 1px solid rgba(243,238,226,0.04);
+  border-bottom: 1px solid rgba(243,238,226,0.04);
 }
 .team-card {
   background: var(--bg);
@@ -789,11 +789,7 @@ html, body, * { cursor: none !important; }
 /* 3D tilt cards */
 .tilt-card {
   transform-style: preserve-3d;
-  transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.5s cubic-bezier(0.23, 1, 0.32, 1);
   will-change: transform;
-}
-.tilt-card.tilt-active {
-  transition: none;
 }
 .tilt-card:hover {
   box-shadow: 0 25px 60px rgba(0,0,0,0.3), 0 0 1px rgba(232,200,122,0.15);
@@ -824,65 +820,65 @@ html, body, * { cursor: none !important; }
   transition: opacity 2s ease, filter 2s ease;
 }
 .living-grad-1 {
-  width: 900px; height: 900px;
-  background: radial-gradient(circle, rgba(232,200,122,0.07), rgba(180,140,60,0.03) 40%, transparent 70%);
-  filter: blur(100px);
-  top: -10%; left: -15%;
+  width: 1000px; height: 1000px;
+  background: radial-gradient(circle, rgba(232,200,122,0.18), rgba(180,140,60,0.06) 40%, transparent 70%);
+  filter: blur(80px);
+  top: -15%; left: -15%;
   animation: grad-drift-1 18s ease-in-out infinite alternate;
 }
 .living-grad-2 {
-  width: 700px; height: 700px;
-  background: radial-gradient(circle, rgba(30,60,140,0.08), rgba(20,40,100,0.03) 40%, transparent 70%);
-  filter: blur(120px);
-  top: 25%; right: -20%;
+  width: 800px; height: 800px;
+  background: radial-gradient(circle, rgba(30,60,160,0.18), rgba(20,40,120,0.06) 40%, transparent 70%);
+  filter: blur(90px);
+  top: 20%; right: -15%;
   animation: grad-drift-2 22s ease-in-out infinite alternate;
 }
 .living-grad-3 {
-  width: 600px; height: 600px;
-  background: radial-gradient(circle, rgba(232,200,122,0.05), transparent 65%);
-  filter: blur(90px);
-  top: 55%; left: 20%;
+  width: 700px; height: 700px;
+  background: radial-gradient(circle, rgba(232,200,122,0.14), rgba(200,160,80,0.04) 45%, transparent 70%);
+  filter: blur(70px);
+  top: 50%; left: 15%;
   animation: grad-drift-3 16s ease-in-out infinite alternate;
 }
 .living-grad-4 {
-  width: 500px; height: 500px;
-  background: radial-gradient(circle, rgba(100,60,180,0.06), transparent 65%);
-  filter: blur(110px);
-  top: 75%; right: 10%;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(100,50,200,0.14), rgba(80,40,160,0.04) 45%, transparent 70%);
+  filter: blur(90px);
+  top: 70%; right: 5%;
   animation: grad-drift-4 20s ease-in-out infinite alternate;
 }
 .living-grad-5 {
-  width: 800px; height: 400px;
-  background: radial-gradient(ellipse, rgba(232,200,122,0.04), transparent 60%);
-  filter: blur(80px);
-  top: 40%; left: -10%;
+  width: 900px; height: 500px;
+  background: radial-gradient(ellipse, rgba(232,200,122,0.10), rgba(180,140,60,0.03) 50%, transparent 65%);
+  filter: blur(60px);
+  top: 35%; left: -10%;
   animation: grad-drift-5 25s ease-in-out infinite alternate;
 }
 @keyframes grad-drift-1 {
-  0%   { transform: translate(0, 0) scale(1); opacity: 0.5; }
-  33%  { transform: translate(60px, 40px) scale(1.08); opacity: 0.7; }
-  66%  { transform: translate(-30px, 80px) scale(0.95); opacity: 0.4; }
-  100% { transform: translate(40px, -20px) scale(1.05); opacity: 0.6; }
+  0%   { transform: translate(0, 0) scale(1); opacity: 0.6; }
+  33%  { transform: translate(80px, 60px) scale(1.15); opacity: 0.9; }
+  66%  { transform: translate(-40px, 100px) scale(0.9); opacity: 0.5; }
+  100% { transform: translate(60px, -30px) scale(1.1); opacity: 0.75; }
 }
 @keyframes grad-drift-2 {
-  0%   { transform: translate(0, 0) scale(1); opacity: 0.4; }
-  50%  { transform: translate(-80px, 60px) scale(1.12); opacity: 0.65; }
-  100% { transform: translate(40px, -40px) scale(0.92); opacity: 0.35; }
+  0%   { transform: translate(0, 0) scale(1); opacity: 0.5; }
+  50%  { transform: translate(-100px, 80px) scale(1.2); opacity: 0.85; }
+  100% { transform: translate(60px, -50px) scale(0.88); opacity: 0.45; }
 }
 @keyframes grad-drift-3 {
-  0%   { transform: translate(0, 0) scale(1) rotate(0deg); opacity: 0.45; }
-  50%  { transform: translate(70px, -50px) scale(1.1) rotate(10deg); opacity: 0.6; }
-  100% { transform: translate(-40px, 30px) scale(0.9) rotate(-5deg); opacity: 0.35; }
+  0%   { transform: translate(0, 0) scale(1) rotate(0deg); opacity: 0.55; }
+  50%  { transform: translate(90px, -60px) scale(1.15) rotate(12deg); opacity: 0.8; }
+  100% { transform: translate(-50px, 40px) scale(0.85) rotate(-6deg); opacity: 0.4; }
 }
 @keyframes grad-drift-4 {
-  0%   { transform: translate(0, 0) scale(1); opacity: 0.3; }
-  50%  { transform: translate(-60px, -40px) scale(1.15); opacity: 0.55; }
-  100% { transform: translate(30px, 50px) scale(0.95); opacity: 0.25; }
+  0%   { transform: translate(0, 0) scale(1); opacity: 0.4; }
+  50%  { transform: translate(-80px, -50px) scale(1.2); opacity: 0.7; }
+  100% { transform: translate(40px, 60px) scale(0.9); opacity: 0.35; }
 }
 @keyframes grad-drift-5 {
-  0%   { transform: translate(0, 0) scaleX(1) scaleY(1); opacity: 0.3; }
-  50%  { transform: translate(100px, 30px) scaleX(1.2) scaleY(0.8); opacity: 0.5; }
-  100% { transform: translate(-50px, -20px) scaleX(0.9) scaleY(1.1); opacity: 0.25; }
+  0%   { transform: translate(0, 0) scaleX(1) scaleY(1); opacity: 0.4; }
+  50%  { transform: translate(120px, 40px) scaleX(1.3) scaleY(0.7); opacity: 0.65; }
+  100% { transform: translate(-60px, -30px) scaleX(0.85) scaleY(1.15); opacity: 0.3; }
 }
 .parallax-grid {
   position: absolute;
@@ -899,6 +895,10 @@ html, body, * { cursor: none !important; }
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
+}
+@keyframes click-ring {
+  0% { transform: scale(0.5); opacity: 1; }
+  100% { transform: scale(1.5); opacity: 0; }
 }
 
 /* Ensure content above parallax */

@@ -106,37 +106,30 @@ function useTiltCards() {
     const cards = document.querySelectorAll('[data-tilt]');
 
     cards.forEach(card => {
-      state.set(card, { targetX: 0, targetY: 0, currentX: 0, currentY: 0, active: false, frame: null });
+      state.set(card, { targetX: 0, targetY: 0, currentX: 0, currentY: 0, scale: 1, targetScale: 1 });
     });
 
-    const lerp = (a, b, t) => a + (b - a) * t;
-
-    const animateCard = (card) => {
-      const s = state.get(card);
-      if (!s) return;
-      s.currentX = lerp(s.currentX, s.targetX, 0.08);
-      s.currentY = lerp(s.currentY, s.targetY, 0.08);
-      card.style.transform = 'perspective(800px) rotateX(' + s.currentX + 'deg) rotateY(' + s.currentY + 'deg) scale(' + (s.active ? 1.02 : 1) + ')';
-      if (Math.abs(s.currentX - s.targetX) > 0.01 || Math.abs(s.currentY - s.targetY) > 0.01) {
-        s.frame = requestAnimationFrame(() => animateCard(card));
+    let running = false;
+    const animate = () => {
+      let anyMoving = false;
+      state.forEach((s, card) => {
+        s.currentX += (s.targetX - s.currentX) * 0.06;
+        s.currentY += (s.targetY - s.currentY) * 0.06;
+        s.scale += (s.targetScale - s.scale) * 0.06;
+        card.style.transform = 'perspective(800px) rotateX(' + s.currentX.toFixed(3) + 'deg) rotateY(' + s.currentY.toFixed(3) + 'deg) scale(' + s.scale.toFixed(4) + ')';
+        if (Math.abs(s.currentX - s.targetX) > 0.005 || Math.abs(s.currentY - s.targetY) > 0.005 || Math.abs(s.scale - s.targetScale) > 0.0005) {
+          anyMoving = true;
+        }
+      });
+      if (anyMoving) {
+        requestAnimationFrame(animate);
       } else {
-        s.frame = null;
+        running = false;
       }
     };
 
-    const startAnim = (card) => {
-      const s = state.get(card);
-      if (s && !s.frame) { s.frame = requestAnimationFrame(() => animateCard(card)); }
-    };
-
-    const onEnter = (e) => {
-      const card = e.currentTarget;
-      const s = state.get(card);
-      if (s) {
-        s.active = true;
-        card.classList.add('tilt-active');
-        setTimeout(() => { card.classList.add('tilt-active'); }, 50);
-      }
+    const kick = () => {
+      if (!running) { running = true; requestAnimationFrame(animate); }
     };
 
     const onMove = (e) => {
@@ -148,39 +141,35 @@ function useTiltCards() {
       const y = e.clientY - rect.top;
       const cx = rect.width / 2;
       const cy = rect.height / 2;
-      s.targetX = ((y - cy) / cy) * -6;
-      s.targetY = ((x - cx) / cx) * 6;
+      s.targetX = ((y - cy) / cy) * -4;
+      s.targetY = ((x - cx) / cx) * 4;
+      s.targetScale = 1.015;
       const shine = card.querySelector('.tilt-shine');
       if (shine) {
         shine.style.setProperty('--shine-x', (x / rect.width * 100) + '%');
         shine.style.setProperty('--shine-y', (y / rect.height * 100) + '%');
       }
-      startAnim(card);
+      kick();
     };
 
     const onLeave = (e) => {
       const card = e.currentTarget;
       const s = state.get(card);
       if (s) {
-        s.active = false;
         s.targetX = 0;
         s.targetY = 0;
-        card.classList.remove('tilt-active');
-        startAnim(card);
+        s.targetScale = 1;
+        kick();
       }
     };
 
     cards.forEach(c => {
-      c.addEventListener('mouseenter', onEnter);
       c.addEventListener('mousemove', onMove);
       c.addEventListener('mouseleave', onLeave);
     });
     return () => cards.forEach(c => {
-      c.removeEventListener('mouseenter', onEnter);
       c.removeEventListener('mousemove', onMove);
       c.removeEventListener('mouseleave', onLeave);
-      const s = state.get(c);
-      if (s && s.frame) cancelAnimationFrame(s.frame);
     });
   }, []);
 }
@@ -207,13 +196,17 @@ function ParallaxBackground() {
       sm.y += (mouse.current.y - sm.y) * 0.03;
       const y = window.scrollY;
       const grads = layerRef.current.querySelectorAll('.living-grad');
-      const speeds = [0.06, -0.04, 0.03, -0.05, 0.02];
-      const cursorStrength = [30, -20, 25, -15, 20];
+      const speeds = [0.12, -0.08, 0.06, -0.1, 0.04];
+      const cursorStrength = [60, -40, 50, -30, 45];
+      const scrollBrightness = [0.15, 0.12, 0.18, 0.10, 0.14];
+      const pageH = document.documentElement.scrollHeight - window.innerHeight;
+      const scrollPct = pageH > 0 ? y / pageH : 0;
       grads.forEach((g, i) => {
         const sy = y * (speeds[i] || 0);
         const cx = (sm.x - 0.5) * (cursorStrength[i] || 0);
         const cy = (sm.y - 0.5) * (cursorStrength[i] || 0) * 0.6;
-        g.style.transform = 'translate(' + cx + 'px, ' + (sy + cy) + 'px)';
+        const extraScale = 1 + Math.sin(scrollPct * Math.PI + i * 1.2) * (scrollBrightness[i] || 0);
+        g.style.transform = 'translate(' + cx + 'px, ' + (sy + cy) + 'px) scale(' + extraScale.toFixed(3) + ')';
       });
       const grid = layerRef.current.querySelector('.parallax-grid');
       if (grid) grid.style.transform = 'translateY(' + (y * -0.02) + 'px)';

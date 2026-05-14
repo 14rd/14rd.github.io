@@ -1,21 +1,16 @@
 // Team Console — Spaciom franchise dashboard (animated)
 function TeamConsole() {
   const [activeTab, setActiveTab] = React.useState(0);
-  const [cursorPos, setCursorPos] = React.useState({ x: 400, y: 200 });
-  const [cursorVisible, setCursorVisible] = React.useState(true);
+  const [cursorPos, setCursorPos] = React.useState({ x: 400, y: 250 });
+  const [clicking, setClicking] = React.useState(false);
+  const containerRef = React.useRef(null);
+  const tabRefs = React.useRef([]);
   const [stats, setStats] = React.useState({
     spaces: 42310, moments: 186000, drops: 7, retention: 61,
     peak: 3200, session: 42, sellThrough: 94,
   });
 
   const tabs = ['Dashboard', 'Spaces', 'Drops', 'Moments', 'Audience'];
-  const tabTargets = [
-    { x: 100, y: 160 },
-    { x: 100, y: 184 },
-    { x: 100, y: 208 },
-    { x: 100, y: 232 },
-    { x: 100, y: 256 },
-  ];
 
   React.useEffect(() => {
     const jitter = setInterval(() => {
@@ -34,16 +29,28 @@ function TeamConsole() {
 
   React.useEffect(() => {
     let tabIdx = 0;
+    let timeout;
     const sequence = () => {
       tabIdx = (tabIdx + 1) % tabs.length;
-      const target = tabTargets[tabIdx];
-      setCursorPos({ x: target.x + Math.random() * 20, y: target.y + Math.random() * 6 });
-      setTimeout(() => {
-        setActiveTab(tabIdx);
-      }, 600);
+      const tabEl = tabRefs.current[tabIdx];
+      const container = containerRef.current;
+      if (tabEl && container) {
+        const cRect = container.getBoundingClientRect();
+        const tRect = tabEl.getBoundingClientRect();
+        const x = tRect.left - cRect.left + 40 + Math.random() * 30;
+        const y = tRect.top - cRect.top + tRect.height / 2 + (Math.random() - 0.5) * 4;
+        setCursorPos({ x, y });
+        timeout = setTimeout(() => {
+          setClicking(true);
+          setTimeout(() => {
+            setActiveTab(tabIdx);
+            setClicking(false);
+          }, 150);
+        }, 800);
+      }
     };
-    const interval = setInterval(sequence, 3200);
-    return () => clearInterval(interval);
+    const interval = setInterval(sequence, 3500);
+    return () => { clearInterval(interval); clearTimeout(timeout); };
   }, []);
 
   const fmtNum = (n) => {
@@ -87,16 +94,16 @@ function TeamConsole() {
     'Audience insights',
   ];
 
-  const sidebarItem = (label, active = false) => (
-    <div style={{
+  const sidebarItem = (label, active, idx) => (
+    <div ref={el => tabRefs.current[idx] = el} style={{
       padding: '8px 12px', borderRadius: 6, fontSize: 12.5,
       color: active ? '#f3eee2' : 'rgba(243,238,226,0.55)',
       background: active ? 'rgba(232,200,122,0.08)' : 'transparent',
       borderLeft: active ? '2px solid #e8c87a' : '2px solid transparent',
       display: 'flex', alignItems: 'center', gap: 10, letterSpacing: '-0.005em',
-      transition: 'all 0.3s ease',
+      transition: 'all 0.35s ease',
     }}>
-      <div style={{ width: 4, height: 4, borderRadius: 99, background: active ? '#e8c87a' : 'rgba(243,238,226,0.35)', transition: 'background 0.3s' }} />
+      <div style={{ width: 4, height: 4, borderRadius: 99, background: active ? '#e8c87a' : 'rgba(243,238,226,0.35)', transition: 'background 0.35s' }} />
       {label}
     </div>
   );
@@ -114,7 +121,7 @@ function TeamConsole() {
   );
 
   return (
-    <div style={{
+    <div ref={containerRef} style={{
       width: 1080, maxWidth: '100%', borderRadius: 14, overflow: 'hidden',
       background: '#040a16', border: '1px solid rgba(243,238,226,0.08)',
       boxShadow: '0 50px 120px rgba(0,0,0,0.55), 0 0 0 1px rgba(232,200,122,0.06)',
@@ -125,12 +132,17 @@ function TeamConsole() {
       <div style={{
         position: 'absolute', zIndex: 100, pointerEvents: 'none',
         left: cursorPos.x, top: cursorPos.y,
-        transition: 'left 0.8s cubic-bezier(0.23, 1, 0.32, 1), top 0.8s cubic-bezier(0.23, 1, 0.32, 1)',
-        opacity: cursorVisible ? 1 : 0,
+        transition: 'left 0.9s cubic-bezier(0.23, 1, 0.32, 1), top 0.9s cubic-bezier(0.23, 1, 0.32, 1)',
+        transform: clicking ? 'scale(0.85)' : 'scale(1)',
       }}>
         <svg width="18" height="22" viewBox="0 0 18 22" fill="none">
           <path d="M1 1L1 18L5.5 13.5L9.5 21L12 20L8 12.5L14 12L1 1Z" fill="white" stroke="rgba(0,0,0,0.5)" strokeWidth="1"/>
         </svg>
+        {clicking && <div style={{
+          position: 'absolute', top: -4, left: -4, width: 26, height: 26,
+          borderRadius: '50%', border: '2px solid rgba(232,200,122,0.5)',
+          animation: 'click-ring 0.3s ease-out forwards',
+        }} />}
       </div>
 
       {/* Title bar */}
@@ -174,13 +186,13 @@ function TeamConsole() {
           <div style={{ height: 1, background: 'rgba(243,238,226,0.06)', margin: '0 0 14px' }} />
           <div style={{ padding: '0 12px 10px', fontSize: 10, fontFamily: 'Geist Mono, monospace', letterSpacing: '0.2em', color: 'rgba(243,238,226,0.4)' }}>OVERVIEW</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            {tabs.map((t, i) => sidebarItem(t, i === activeTab))}
+            {tabs.map((t, i) => sidebarItem(t, i === activeTab, i))}
           </div>
           <div style={{ padding: '20px 12px 10px', fontSize: 10, fontFamily: 'Geist Mono, monospace', letterSpacing: '0.2em', color: 'rgba(243,238,226,0.4)' }}>OPERATE</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            {sidebarItem('Live Layer')}
-            {sidebarItem('Schedule')}
-            {sidebarItem('Insights')}
+            {sidebarItem('Live Layer', false, -1)}
+            {sidebarItem('Schedule', false, -2)}
+            {sidebarItem('Insights', false, -3)}
           </div>
         </div>
 
@@ -245,7 +257,7 @@ function TeamConsole() {
             </div>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               {(activities[activeTab] || activities[0]).map((r, i) => (
-                <div key={activeTab + '-' + i} style={{ display: 'grid', gridTemplateColumns: '50px 80px 1fr', alignItems: 'center', padding: '8px 0', borderTop: i === 0 ? 'none' : '1px solid rgba(243,238,226,0.05)', transition: 'opacity 0.4s', animation: 'fadeIn 0.4s ease' }}>
+                <div key={activeTab + '-' + i} style={{ display: 'grid', gridTemplateColumns: '50px 80px 1fr', alignItems: 'center', padding: '8px 0', borderTop: i === 0 ? 'none' : '1px solid rgba(243,238,226,0.05)', animation: 'fadeIn 0.4s ease' }}>
                   <span style={{ fontSize: 11, fontFamily: 'Geist Mono, monospace', color: 'rgba(243,238,226,0.5)' }}>{r.t}</span>
                   <span style={{ fontSize: 10, fontFamily: 'Geist Mono, monospace', letterSpacing: '0.16em', color: '#e8c87a' }}>{r.tag}</span>
                   <span style={{ fontSize: 13, letterSpacing: '-0.005em' }}>{r.ev}</span>

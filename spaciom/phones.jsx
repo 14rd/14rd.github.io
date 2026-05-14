@@ -204,12 +204,12 @@ function PhoneLive() {
   const formatTime = (s) => Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
 
   return (
-    <div style={{ ...phoneStyles.screen, background: 'linear-gradient(180deg, #020811 0%, #020811 100%)' }}>
+    <div style={{ ...phoneStyles.screen, background: 'linear-gradient(180deg, #0d1e36 0%, #020811 100%)' }}>
       <div style={{
         position: 'absolute', top: 56, left: 0, right: 0, bottom: 0,
         background:
-          'radial-gradient(ellipse at center 30%, rgba(232,200,122,0.15), transparent 50%),' +
-          'linear-gradient(180deg, #071324 0%, #020811 60%)',
+          'radial-gradient(ellipse at center 30%, rgba(232,200,122,0.08), transparent 45%),' +
+          'linear-gradient(180deg, rgba(13,30,54,0.5) 0%, transparent 40%)',
       }} />
       <svg viewBox="0 0 400 500" style={{ position: 'absolute', top: 80, left: 0, right: 0, width: '100%', opacity: 0.5 }}>
         <defs>
